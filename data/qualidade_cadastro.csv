@@ -1,0 +1,23 @@
+ano,turma,curso,status_matricula,aluno_nome,aluno_id,aluno_cpf,aluno_sem_cpf,resp_acad_nome,resp_acad_cpf,resp_acad_sem_cpf,resp_fin_nome,resp_fin_cpf_cnpj,resp_fin_sem_cpf_cnpj,resp_fin_cep,resp_fin_rua,resp_fin_sem_endereco
+2024,1MA,Ensino Médio,active,Enzo Farisco Mascheroni,1342,54333206855,N,Ricardo Giuzepe Mascheroni,,S,Luciana Maria Farisco,10414021800,N,01155030,Rua Dona Elisa,N
+2024,1MA,Ensino Médio,active,Isadora Martins Leme,6513,,S,Roberto Augusto Leme da Silva,21565243862,N,Thalita Martins da Silva,22326136829,N,06543195,Alameda Birmânia,N
+2024,3A,Ensino Fundamental I,active,Khloe Gomes Fatipah,2936,54803226806,N,Andrew Fatipah,,S,Regiane Alves Gomes,18550072826,N,06036048,Avenida Presidente João Goulart,N
+2024,3B,Ensino Fundamental I,active,Luna Nunes Dias,8048,,S,Fabio Nunes Dias,,S,Adriana Mendes Nunes Dias,18303537806,N,05579010,Rua Santa Rosa Júnior,N
+2024,4B,Ensino Fundamental I,active,Kelly Chen Ye,8106,,S,Xin Nan Ye,23456615850,N,Chen Xiao Xiao,23465916883,N,05311000,Avenida Mofarrej,N
+2024,8B,Ensino Fundamental II,active,Helena Dias Kazuhara,1998,,S,Selma Paula Dias Kazuhara,29582769882,N,Paulo Barbosa Kazuhara,22632268850,N,05338100,Rua Eulo Maroni,N
+2024,9B,Ensino Fundamental II,active,Pedro Henrique Duarte Cruz,1633,53259753826,N,Debora Duarte Cruz,,S,Igor Moraes da Cruz,26579567856,N,05311000,Avenida Mofarrej,N
+2024,J2IA,Educação Infantil,active,Rafael Marins Correa,8175,56040239816,N,Luiz Rodrigo Marques Correa,,S,Danielle Regina Marins Corrêa,28378266850,N,05348010,Avenida Marechal Mário Guedes,N
+2024,J2TC,Educação Infantil,active,Helena Pavão Webber Caldana,8811,56651548816,N,Luiz Augusto Webber Caldana,,S,Zilda Antônia Mendonça,08868046806,N,06020194,Avenida Manoel Pedro Pimentel,N
+2024,M3MB,Educação Infantil,active,Giovana Miranda de Faria,8714,,S,Priscilla Miranda de Faria,38653269860,N,Maurício Ferreira de Faria,22151405850,N,06030308,Alameda Ypê Roxo,N
+2025,1B,Ensino Fundamental I,active,Rafael Marins Correa,8175,56040239816,N,Luiz Rodrigo Marques Correa,,S,Danielle Regina Marins Corrêa,28378266850,N,05348010,Avenida Marechal Mário Guedes,N
+2025,1MA,Ensino Médio,active,Pedro Fabiano Sperendio Pollis,2192,44345254841,N,Adriane Oliveira Pollis,21582776881,N,Menck Supermercados,54472279000135,N,,,S
+2025,1MA,Ensino Médio,active,Pedro Fabiano Sperendio Pollis,2192,44345254841,N,Adriane Oliveira Pollis,21582776881,N,Menck Supermercados,54472279000135,N,,,S
+2025,2MB,Ensino Médio,active,Enzo Farisco Mascheroni,1342,54333206855,N,Ricardo Giuzepe Mascheroni,,S,Luciana Maria Farisco,10414021800,N,01155030,Rua Dona Elisa,N
+2025,4A,Ensino Fundamental I,active,Luna Nunes Dias,8048,,S,Fabio Nunes Dias,,S,Adriana Mendes Nunes Dias,18303537806,N,05579010,Rua Santa Rosa Júnior,N
+2025,4B,Ensino Fundamental I,active,Khloe Gomes Fatipah,2936,54803226806,N,Andrew Fatipah,,S,Regiane Alves Gomes,18550072826,N,06036048,Avenida Presidente João Goulart,N
+2025,5B,Ensino Fundamental I,active,Kelly Chen Ye,8106,,S,Xin Nan Ye,23456615850,N,Chen Xiao Xiao,23465916883,N,05311000,Avenida Mofarrej,N
+2025,7A,Ensino Fundamental II,active,Lara Hipólito Da Gama,9090,,S,BARBARA DE PAULA HIPOLITO,36931605895,N,RAUL CARLOS DE ALMEIDA JUNIOR,36955298810,N,06026090,Rua Doutor Paulo Ferraz da Costa Aguiar,N
+2025,9A,Ensino Fundamental II,active,Nicholas Louise Espinal,9106,,S,Hector Luis Espinal,90171005830,N,Patricia Faleiros de Oliveira,36957964809,N,06355290,Rua Miraguaí,N
+2025,9B,Ensino Fundamental II,active,Helena Dias Kazuhara,1998,,S,Selma Paula Dias Kazuhara,29582769882,N,Paulo Barbosa Kazuhara,22632268850,N,05338100,Rua Eulo Maroni,N
+2025,J1MB,Educação Infantil,active,Giovana Miranda de Faria,8714,,S,Priscilla Miranda de Faria,38653269860,N,Maurício Ferreira de Faria,22151405850,N,06030308,Alameda Ypê Roxo,N
+2025,M2MB,Educação Infantil,active,Pedro Lopes Schiavinato,9146,,S,Stephanie Manzi Lopes Schiavinato,36384502879,N,Stephanie Manzi Lopes Schiavinato,36384502879,N,05315030,Rua Nagel,N

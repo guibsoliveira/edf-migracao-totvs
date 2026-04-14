@@ -1,0 +1,772 @@
+academic|id_academic|integer||NO
+academic|id_institution|integer||NO
+academic|course_name|text||YES
+academic|course_code|text||YES
+academic|module_name|text||YES
+academic|curriculum_name|text||YES
+academic|subject_name|text||YES
+academic|workload_duration|text||YES
+academic|min_duration_enrollment|integer||YES
+academic|max_duration_enrollment|integer||YES
+academic|min_workload_required|numeric||YES
+academic|min_workload_optional|numeric||YES
+academic|min_workload_elective|numeric||YES
+academic|min_workload_enrollment|numeric||YES
+academic|max_workload_enrollment|numeric||YES
+academic|subject_code_gennera|numeric||YES
+academic|subject_code|character varying|4|YES
+academic|code_module|integer||YES
+attendance|id_person|integer||NO
+attendance|subject_name|text||YES
+attendance|academic_calendar|text||YES
+attendance|class_name|text||YES
+attendance|module_name|text||YES
+attendance|course_name|text||YES
+attendance|diary_name|text||YES
+attendance|period_name|text||YES
+attendance|period_code|text||YES
+attendance|lesson_count|integer||YES
+attendance|presence|integer||YES
+attendance|absence|integer||YES
+catalog|id_catalog|integer||NO
+catalog|name|text||NO
+catalog|mappings|jsonb||NO
+catalog|work_common_fields|jsonb||YES
+catalog|copy_common_fields|jsonb||YES
+class|id_class|integer||NO
+class|id_academic|integer||NO
+class|name|text||NO
+class|academic_calendar|text||NO
+class|shift|text||YES
+class|hour_start|text||YES
+class|hour_end|text||YES
+cliente_fornecedor|codcfo|integer||YES
+cliente_fornecedor|nomefantasia|character varying|100|YES
+cliente_fornecedor|cgccfo|character varying|100|YES
+content|id_content|integer||NO
+content|data|jsonb||YES
+content|updated_at|timestamp with time zone||YES
+content|created_at|timestamp with time zone||NO
+contract|id_contract|integer||NO
+contract|id_institution|integer||NO
+contract|id_person|integer||NO
+contract|status|text||YES
+contract|penalty_percentage|numeric||YES
+contract|interest_percentage|numeric||YES
+contract|date|timestamp with time zone||YES
+contract|details|text||YES
+contract|observation|text||YES
+contract|purchases|numeric||YES
+contract|loans|numeric||YES
+contract|discounts|numeric||YES
+contract|cancellations|numeric||YES
+contract|funds|numeric||YES
+contract|refunds|numeric||YES
+contract|renegotiations|numeric||YES
+contract|payments|numeric||YES
+contract|reversals|numeric||YES
+contract|penalties|numeric||YES
+contract|interests|numeric||YES
+contract|balance|numeric||YES
+contract|total|numeric||YES
+copy|id_copy|integer||NO
+copy|id_work|integer||NO
+copy|id_library|integer||NO
+copy|code|text||NO
+copy_field|id_copy_field|integer||NO
+copy_field|id_copy|integer||NO
+copy_field|tag|text||NO
+copy_field|indicator1|text||YES
+copy_field|indicator2|text||YES
+copy_subfield|id_copy_field|integer||NO
+copy_subfield|code|text||YES
+copy_subfield|value|text||YES
+curriculum|id_curriculum|integer||NO
+curriculum|course_name|text||NO
+curriculum|curriculum_name|text||NO
+curriculum|module_name|text||NO
+curriculum|subject_name|text||NO
+disciplina|discipline_code|character varying|10|NO
+disciplina|discipline_name|character varying|150|NO
+enrollment|id_enrollment|integer||NO
+enrollment|id_institution|integer||NO
+enrollment|id_parent_enrollment|integer||YES
+enrollment|id_person|integer||YES
+enrollment|id_academic_responsible|integer||YES
+enrollment|id_financial_responsible|integer||YES
+enrollment|code|text||YES
+enrollment|status|text||YES
+enrollment|date|timestamp with time zone||YES
+enrollment|campaign_name|text||YES
+enrollment|academic_calendar|text||YES
+enrollment|curriculum_name|text||YES
+enrollment|course_name|text||YES
+enrollment|module_name|text||YES
+enrollment|class_name|text||YES
+enrollment|cancellation_reason|text||YES
+enrollment|blocked|text||YES
+enrollment|cod_col|integer||YES
+enrollment_code|code|character varying||YES
+enrollment_code|id_person|character varying||YES
+enrollment_code|name|character varying|50|YES
+enrollment_contract|id_enrollment|integer||NO
+enrollment_contract|id_contract|integer||NO
+enrollment_contract|details|text||YES
+enrollment_document|id_enrollment_document|integer||NO
+enrollment_document|id_enrollment|integer||NO
+enrollment_document|document_name|text||NO
+enrollment_document|status|text||NO
+enrollment_record|id_enrollment_record|integer||NO
+enrollment_record|id_enrollment|integer||YES
+enrollment_record|id_person|integer||YES
+enrollment_record|institution_name|text||YES
+enrollment_record|institution_city|text||YES
+enrollment_record|institution_state|text||YES
+enrollment_record|calendar_name|text||YES
+enrollment_record|course_name|text||YES
+enrollment_record|module_name|text||YES
+enrollment_record|attendance|numeric||YES
+enrollment_record|workload|numeric||YES
+enrollment_record|status|text||YES
+enrollment_record|observation|text||YES
+enrollment_record|finished|boolean||YES
+enrollment_record|finish_date|timestamp with time zone||YES
+enrollment_record|cancellation_reason|text||YES
+enrollment_record|course_type|text||YES
+enrollment_record|course_level|text||YES
+enrollment_record|complementary_status|text||YES
+enrollment_record|curriculum_name|text||YES
+enrollment_record|subject_name|text||YES
+enrollment_record|subject_type|text||YES
+enrollment_record|subject_workload|numeric||YES
+enrollment_record|subject_attendance|numeric||YES
+enrollment_record|subject_average|numeric||YES
+enrollment_record|subject_status|text||YES
+enrollment_record|subject_observation|text||YES
+enrollment_record|subject_failure_reason|text||YES
+enrollment_record|subject_dismissed|text||YES
+enrollment_record|subject_dismissal_reason|text||YES
+enrollment_record|subject_reference_year|text||YES
+enrollment_record|subject_cancellation_reason|text||YES
+enrollment_record|subject_group_name|text||YES
+enrollment_record|subject_complementary_status|text||YES
+enrollment_record|subject_letter_grade|text||YES
+enrollment_record|professors|text||YES
+enrollment_record|subject_code|character varying||YES
+enrollment_record|workload_real|numeric||YES
+enrollment_record|disc_code|text||YES
+exam|id_exam|integer||NO
+exam|class|text||NO
+exam|subject|text||NO
+exam|period|text||NO
+exam|name|text||NO
+exam|code|text||YES
+exam|weight|numeric||NO
+exam|max_grade|numeric||YES
+grade|id_person|integer||NO
+grade|subject_name|text||YES
+grade|academic_calendar|text||YES
+grade|class_name|text||YES
+grade|module_name|text||YES
+grade|course_name|text||YES
+grade|diary_name|text||YES
+grade|period_name|text||YES
+grade|period_code|text||YES
+grade|exam_name|text||YES
+grade|grade|text||YES
+grade|type|integer||YES
+institution|id_institution|integer||NO
+institution|code|text||YES
+institution|city|text||YES
+institution|cnpj|text||YES
+institution|name|text||YES
+institution|state|text||YES
+institution|street|text||YES
+institution|zipcode|text||YES
+institution|metadata|text||YES
+institution|legalname|text||YES
+institution|neighborhood|text||YES
+institution|streetnumber|text||YES
+institution|telephonenumber|text||YES
+institution|telephoneareacode|text||YES
+invoice|id_invoice|integer||NO
+invoice|id_contract|integer||NO
+invoice|month|integer||NO
+invoice|year|integer||NO
+invoice|due_date|timestamp with time zone||NO
+invoice|date|timestamp with time zone||YES
+invoice|purchases|numeric||YES
+invoice|loans|numeric||YES
+invoice|discounts|numeric||YES
+invoice|cancellations|numeric||YES
+invoice|funds|numeric||YES
+invoice|refunds|numeric||YES
+invoice|renegotiations|numeric||YES
+invoice|payments|numeric||YES
+invoice|reversals|numeric||YES
+invoice|penalties|numeric||YES
+invoice|interests|numeric||YES
+invoice|balance|numeric||YES
+invoice|total|numeric||YES
+invoice_payment|id_invoice|integer||NO
+invoice_payment|id_payment|integer||NO
+invoice_payment|amount|numeric||YES
+library|id_library|integer||NO
+library|name|text||NO
+library|id_catalog|integer||YES
+library|id_institution|integer||YES
+log_subject_name_updates|id|integer||NO
+log_subject_name_updates|tabela|text||NO
+log_subject_name_updates|old_name|text||NO
+log_subject_name_updates|new_name|text||NO
+log_subject_name_updates|qtd_afetada|integer||NO
+log_subject_name_updates|data_execucao|timestamp with time zone||NO
+matrix_subjects|reference_year|integer||NO
+matrix_subjects|module_name|text||NO
+matrix_subjects|subject_key|text||NO
+matrix_subjects|disc_code|text||YES
+matrix_subjects|cod_habilitacao|text||YES
+matrix_subjects|subject_name|text||YES
+matrix_subjects|subject_type|text||YES
+matrix_subjects|subject_group_name|text||YES
+matrix_subjects|workload_real|numeric||YES
+matrix_subjects|subject_workload|numeric||YES
+matrix_subjects|sample_coverage|integer||NO
+matrix_subjects|created_at|timestamp with time zone||NO
+matrix_subjects|course_name|text||YES
+matrix_subjects|course_code|text||YES
+payment|id_payment|integer||NO
+payment|id_person|integer||NO
+payment|payment_method|text||NO
+payment|status|text||NO
+payment|date|text||NO
+payment|type|text||NO
+payment|amount|numeric||YES
+period|id_period|integer||NO
+period|academic_calendar_name|text||YES
+period|academic_calendar_code|text||YES
+period|academic_calendar_start_date|text||YES
+period|academic_calendar_end_date|text||YES
+period|academic_calendar_status|text||YES
+period|reference_year|text||YES
+period|period_start_date|text||YES
+period|period_end_date|text||YES
+period|period_name|text||YES
+period|retake|text||YES
+period|period_code|text||YES
+period_average|id_institution|integer||NO
+period_average|id_person|integer||NO
+period_average|subject_name|text||YES
+period_average|academic_calendar|text||YES
+period_average|class_name|text||YES
+period_average|module_name|text||YES
+period_average|course_name|text||YES
+period_average|diary_name|text||YES
+period_average|period_name|text||YES
+period_average|period_code|text||YES
+period_average|period_average|text||YES
+person|id_person|integer||NO
+person|person_type|text||NO
+person_cpf_mapping|cpf|text||YES
+person_cpf_mapping|name_norm|text||YES
+person_cpf_mapping|id_person_principal|integer||NO
+person_cpf_mapping|id_person_todos|text||YES
+person_cpf_mapping|criado_em|timestamp without time zone||YES
+person_cpf_mapping|cpf_temporario|boolean||YES
+person_cpf_mapping|cpf_original|character varying|11|YES
+person_estrangeiro|id_person|integer||NO
+person_estrangeiro|city|text||YES
+person_estrangeiro|name|text||YES
+person_estrangeiro|zone|text||YES
+person_estrangeiro|email|text||YES
+person_estrangeiro|state|text||YES
+person_estrangeiro|gender|text||YES
+person_estrangeiro|street|text||YES
+person_estrangeiro|zipcode|text||YES
+person_estrangeiro|deceased|text||YES
+person_estrangeiro|identity|text||YES
+person_estrangeiro|passport|text||YES
+person_estrangeiro|religion|text||YES
+person_estrangeiro|birthdate|text||YES
+person_estrangeiro|ethnicity|text||YES
+person_estrangeiro|fax_number|text||YES
+person_estrangeiro|birth_state|text||YES
+person_estrangeiro|birthplace|text||YES
+person_estrangeiro|complement|text||YES
+person_estrangeiro|profession|text||YES
+person_estrangeiro|social_name|text||YES
+person_estrangeiro|civil_status|text||YES
+person_estrangeiro|fax_area_code|text||YES
+person_estrangeiro|nationality|text||YES
+person_estrangeiro|birth_country|text||YES
+person_estrangeiro|neighborhood|text||YES
+person_estrangeiro|street_number|text||YES
+person_estrangeiro|telephone_number|text||YES
+person_estrangeiro|mobile_phone_number|text||YES
+person_estrangeiro|telephone_area_code|text||YES
+person_estrangeiro|mobile_phone_area_code|text||YES
+person_estrangeiro|commercial_phone_number|text||YES
+person_estrangeiro|commercial_phone_area_code|text||YES
+person_estrangeiro|national_migration_registry|text||YES
+person_fisica|id_person|integer||NO
+person_fisica|rg|text||YES
+person_fisica|cpf|text||YES
+person_fisica|city|text||YES
+person_fisica|name|text||YES
+person_fisica|zone|text||YES
+person_fisica|email|text||YES
+person_fisica|photo|text||YES
+person_fisica|state|text||YES
+person_fisica|gender|text||YES
+person_fisica|street|text||YES
+person_fisica|zipcode|text||YES
+person_fisica|deceased|text||YES
+person_fisica|religion|text||YES
+person_fisica|social_id|text||YES
+person_fisica|birthdate|text||YES
+person_fisica|ethnicity|text||YES
+person_fisica|fax_number|text||YES
+person_fisica|birth_state|text||YES
+person_fisica|birthplace|text||YES
+person_fisica|complement|text||YES
+person_fisica|profession|text||YES
+person_fisica|social_name|text||YES
+person_fisica|civil_status|text||YES
+person_fisica|fax_area_code|text||YES
+person_fisica|nationality|text||YES
+person_fisica|naturalized|text||YES
+person_fisica|rg_issue_date|text||YES
+person_fisica|birth_country|text||YES
+person_fisica|neighborhood|text||YES
+person_fisica|special_needs|text||YES
+person_fisica|street_number|text||YES
+person_fisica|voter_document|text||YES
+person_fisica|education_level|text||YES
+person_fisica|military_status|text||YES
+person_fisica|rg_issuing_state|text||YES
+person_fisica|rg_issuing_agency|text||YES
+person_fisica|telephone_number|text||YES
+person_fisica|mobile_phone_number|text||YES
+person_fisica|telephone_area_code|text||YES
+person_fisica|voter_document_city|text||YES
+person_fisica|voter_document_zone|text||YES
+person_fisica|voter_document_state|text||YES
+person_fisica|military_certificate|text||YES
+person_fisica|military_description|text||YES
+person_fisica|mobile_phone_area_code|text||YES
+person_fisica|civil_certificate_book|text||YES
+person_fisica|civil_certificate_page|text||YES
+person_fisica|civil_certificate_term|text||YES
+person_fisica|voter_document_section|text||YES
+person_fisica|commercial_phone_number|text||YES
+person_fisica|civil_certificate_agency|text||YES
+person_fisica|voter_document_issue_date|text||YES
+person_fisica|commercial_phone_area_code|text||YES
+person_fisica|civil_certificate_issue_date|text||YES
+person_fisica|civil_certificate_agency_state|text||YES
+person_fisica|military_certificate_description|text||YES
+person_fisica|academic_registration|character varying|50|YES
+person_fisica|student_code_inep|character varying|50|YES
+person_fisica|cod_nationality|text||YES
+person_fisica|telephone_number_normalized|character varying|20|YES
+person_fisica|mobile_phone_number_normalized|character varying|20|YES
+person_fisica|commercial_phone_number_normalized|character varying|20|YES
+person_fisica|codcfo|character varying|5|YES
+person_juridica|id_person|integer||NO
+person_juridica|city|text||YES
+person_juridica|cnpj|text||YES
+person_juridica|name|text||YES
+person_juridica|zone|text||YES
+person_juridica|email|text||YES
+person_juridica|state|text||YES
+person_juridica|street|text||YES
+person_juridica|zipcode|text||YES
+person_juridica|legal_name|text||YES
+person_juridica|complement|text||YES
+person_juridica|neighborhood|text||YES
+person_juridica|street_number|text||YES
+person_juridica|representative|text||YES
+person_juridica|city_inscription|text||YES
+person_juridica|telephone_number|text||YES
+person_juridica|state_inscription|text||YES
+person_juridica|telephone_area_code|text||YES
+pessoa_sexo|name|character varying|50|YES
+pessoa_sexo|gender|character varying|50|YES
+professor_cpf_temp|nome|character varying|50|YES
+professor_cpf_temp|cpf|character varying|50|YES
+professor_cpf_temp|email|character varying|50|YES
+professor_id_mapping|prof_norm_text|text||NO
+professor_id_mapping|codprof_correto|character varying|10|YES
+professor_id_mapping|criado_em|timestamp without time zone||YES
+professor_id_mapping|atualizado_em|timestamp without time zone||YES
+professor_quadro_horarios|ID_USER|integer||YES
+professor_quadro_horarios|PROFESSOR|character varying|50|YES
+professor_quadro_horarios|CALENDARIO|integer||YES
+professor_quadro_horarios|TURMA|character varying|50|YES
+professor_quadro_horarios|DISCIPLINA|character varying|50|YES
+professor_quadro_horarios|DIA|character varying|50|YES
+professor_quadro_horarios|INICIO|character varying|50|YES
+professor_quadro_horarios|FIM|character varying|50|YES
+professor_quadro_horarios|TURNO|character varying|50|YES
+professor_quadro_horarios|Column10|character varying|50|YES
+professor_quadro_horarios|cpf_professor|character varying|11|YES
+professor_quadro_horarios|email_professor|character varying|255|YES
+register_transaction|id_register_transaction|integer||NO
+register_transaction|register_name|text||NO
+register_transaction|register_user_name|text||NO
+register_transaction|session_date_start|text||NO
+register_transaction|session_date_end|text||YES
+register_transaction|session_status|text||NO
+register_transaction|id_person|integer||NO
+register_transaction|operation_date|text||NO
+register_transaction|operation_issue_date|text||NO
+register_transaction|operation_ignore_interest|text||NO
+register_transaction|operation_ignore_penalty|text||NO
+register_transaction|operation_type|text||NO
+register_transaction|transaction_type|text||NO
+register_transaction|cash_amount|text||NO
+register_transaction|check_amount|text||NO
+register_transaction|credit_card_amount|text||NO
+register_transaction|debit_card_amount|text||NO
+register_transaction|bank_transfer_amount|text||NO
+register_transaction|transaction_date|text||NO
+relationship|id_owner|integer||NO
+relationship|id_target|integer||NO
+relationship|type|text||NO
+servicos|Competência|character varying|50|YES
+servicos| Contrato|character varying|50|YES
+servicos| Data de Vencimento|character varying|50|YES
+servicos| Item|character varying|50|YES
+servicos| Resp. Financeiro|character varying|50|YES
+servicos| CPF Resp.|character varying|50|YES
+servicos| Dt Nascimento Resp Fin.|character varying|50|YES
+servicos| Sexo Resp Fin.|character varying|50|YES
+servicos| Matrícula.|character varying|50|YES
+servicos| Aluno|character varying|50|YES
+servicos| Dt nascimento aluno|character varying|50|YES
+servicos| Compras|character varying|50|YES
+servicos| DescBolsas|character varying|50|YES
+servicos| Cancelamentos|character varying|50|YES
+servicos| Financiamentos|character varying|50|YES
+servicos| Renegociações|character varying|50|YES
+servicos| Ressarcimentos|character varying|50|YES
+servicos| Fundos|character varying|50|YES
+servicos| Multa|character varying|50|YES
+servicos| Juros|character varying|50|YES
+servicos| Renegociação|character varying|50|YES
+servicos| Ressarcimento|character varying|50|YES
+servicos| Valor Pago|character varying|50|YES
+servicos| Data Pagamento|character varying|128|YES
+servicos| Status|character varying|50|YES
+servicos_2018_2019|nome_instituticao|character varying|50|YES
+servicos_2018_2019|contrato_status|character varying|50|YES
+servicos_2018_2019|contrato|text||YES
+servicos_2018_2019|contrato_relacionado|character varying|50|YES
+servicos_2018_2019|id_pessoa|character varying|50|YES
+servicos_2018_2019|id_matricula|character varying|50|YES
+servicos_2018_2019|status_matricula|character varying|50|YES
+servicos_2018_2019|polo|character varying|50|YES
+servicos_2018_2019|fatura_mes|text||YES
+servicos_2018_2019|fatura_ano|text||YES
+servicos_2018_2019|calendario_academico|character varying|50|YES
+servicos_2018_2019|curso|character varying|50|YES
+servicos_2018_2019|serie|character varying|50|YES
+servicos_2018_2019|turma|character varying|50|YES
+servicos_2018_2019|item|character varying|64|YES
+servicos_2018_2019|responsavel_financeiro|character varying|50|YES
+servicos_2018_2019|cpf_responsavel_financeiro|text||YES
+servicos_2018_2019|aluno|character varying|50|YES
+servicos_2018_2019|data_vencimento|character varying|50|YES
+servicos_2018_2019|valor_bruto|character varying|50|YES
+servicos_2018_2019|valor_liquido|character varying|50|YES
+servicos_2018_2019|valor_descontos|character varying|50|YES
+servicos_2018_2019|valor_cancelamentos|character varying|50|YES
+servicos_2018_2019|valor_financiamento|character varying|50|YES
+servicos_2018_2019|valor_estorno|character varying|50|YES
+servicos_2018_2019|valor_renegociacao|character varying|50|YES
+servicos_2018_2019|valor_fundo|character varying|50|YES
+servicos_2018_2019|valor_ressarcimento|character varying|50|YES
+servicos_2018_2019|valor_multa|character varying|50|YES
+servicos_2018_2019|valor_juros|character varying|50|YES
+servicos_2018_2019|valor_perda|character varying|50|YES
+servicos_2018_2019|valor_pagamento|character varying|50|YES
+servicos_2018_2019|dias_atraso|text||YES
+servicos_2018_2019|multa_prevista|character varying|50|YES
+servicos_2018_2019|juro_previsto|character varying|50|YES
+servicos_2018_2019|desconto_previsto|character varying|50|YES
+servicos_2018_2019|status|character varying|50|YES
+servicos_2018_2019|saldo_devedor|character varying|50|YES
+servicos_2018_2019|total_a_pagar|character varying|50|YES
+servicos_2018_2019|pagamento_boleto|character varying|50|YES
+servicos_2018_2019|pagamento_dinheiro|character varying|50|YES
+servicos_2018_2019|pagamento_cheque|character varying|50|YES
+servicos_2018_2019|pagamento_cartao_credito|character varying|50|YES
+servicos_2018_2019|pagamento_cartao_debito|character varying||YES
+servicos_2018_2019|pagamento_transferencia|character varying|50|YES
+servicos_2018_2019|pagamento_pix|character varying|50|YES
+servicos_2018_2019|data_pagamento|character varying|50|YES
+servicos_2018_2019|data_liquidacao|character varying|50|YES
+servicos_2020_2021|nome_instituticao|character varying|50|YES
+servicos_2020_2021|contrato_status|character varying|50|YES
+servicos_2020_2021|contrato|text||YES
+servicos_2020_2021|contrato_relacionado|character varying|50|YES
+servicos_2020_2021|id_pessoa|text||YES
+servicos_2020_2021|id_matricula|text||YES
+servicos_2020_2021|status_matricula|character varying|50|YES
+servicos_2020_2021|polo|character varying|50|YES
+servicos_2020_2021|fatura_mes|text||YES
+servicos_2020_2021|fatura_ano|text||YES
+servicos_2020_2021|calendario_academico|text||YES
+servicos_2020_2021|curso|character varying|50|YES
+servicos_2020_2021|serie|character varying|50|YES
+servicos_2020_2021|turma|character varying|50|YES
+servicos_2020_2021|item|character varying|64|YES
+servicos_2020_2021|responsavel_financeiro|character varying|50|YES
+servicos_2020_2021|cpf_responsavel_financeiro|text||YES
+servicos_2020_2021|aluno|character varying|50|YES
+servicos_2020_2021|data_vencimento|character varying|50|YES
+servicos_2020_2021|valor_bruto|character varying|50|YES
+servicos_2020_2021|valor_liquido|character varying|50|YES
+servicos_2020_2021|valor_descontos|character varying|50|YES
+servicos_2020_2021|valor_cancelamentos|character varying|50|YES
+servicos_2020_2021|valor_financiamento|character varying|50|YES
+servicos_2020_2021|valor_estorno|character varying|50|YES
+servicos_2020_2021|valor_renegociacao|character varying|50|YES
+servicos_2020_2021|valor_fundo|character varying|50|YES
+servicos_2020_2021|valor_ressarcimento|character varying|50|YES
+servicos_2020_2021|valor_multa|character varying|50|YES
+servicos_2020_2021|valor_juros|character varying|50|YES
+servicos_2020_2021|valor_perda|character varying|50|YES
+servicos_2020_2021|valor_pagamento|character varying|50|YES
+servicos_2020_2021|dias_atraso|text||YES
+servicos_2020_2021|multa_prevista|character varying|50|YES
+servicos_2020_2021|juro_previsto|character varying|50|YES
+servicos_2020_2021|desconto_previsto|character varying|50|YES
+servicos_2020_2021|status|character varying|50|YES
+servicos_2020_2021|saldo_devedor|character varying|50|YES
+servicos_2020_2021|total_a_pagar|character varying|50|YES
+servicos_2020_2021|pagamento_boleto|character varying|50|YES
+servicos_2020_2021|pagamento_dinheiro|character varying|50|YES
+servicos_2020_2021|pagamento_cheque|character varying|50|YES
+servicos_2020_2021|pagamento_cartao_credito|character varying|50|YES
+servicos_2020_2021|pagamento_cartao_debito|character varying|50|YES
+servicos_2020_2021|pagamento_transferencia|character varying|50|YES
+servicos_2020_2021|pagamento_pix|character varying|50|YES
+servicos_2020_2021|data_pagamento|character varying|50|YES
+servicos_2020_2021|data_liquidacao|character varying|50|YES
+servicos_2022_2023|nome_instituticao|character varying|50|YES
+servicos_2022_2023|contrato_status|character varying|50|YES
+servicos_2022_2023|contrato|text||YES
+servicos_2022_2023|contrato_relacionado|character varying|50|YES
+servicos_2022_2023|id_pessoa|text||YES
+servicos_2022_2023|id_matricula|text||YES
+servicos_2022_2023|status_matricula|character varying|50|YES
+servicos_2022_2023|polo|character varying|50|YES
+servicos_2022_2023|fatura_mes|text||YES
+servicos_2022_2023|fatura_ano|text||YES
+servicos_2022_2023|calendario_academico|text||YES
+servicos_2022_2023|curso|character varying|50|YES
+servicos_2022_2023|serie|character varying|50|YES
+servicos_2022_2023|turma|character varying|50|YES
+servicos_2022_2023|item|character varying|100|YES
+servicos_2022_2023|responsavel_financeiro|character varying|100|YES
+servicos_2022_2023|cpf_responsavel_financeiro|text||YES
+servicos_2022_2023|aluno|character varying|50|YES
+servicos_2022_2023|data_vencimento|character varying|50|YES
+servicos_2022_2023|valor_bruto|character varying|50|YES
+servicos_2022_2023|valor_liquido|character varying|50|YES
+servicos_2022_2023|valor_descontos|character varying|50|YES
+servicos_2022_2023|valor_cancelamentos|character varying|50|YES
+servicos_2022_2023|valor_financiamento|character varying|50|YES
+servicos_2022_2023|valor_estorno|character varying|50|YES
+servicos_2022_2023|valor_renegociacao|character varying|50|YES
+servicos_2022_2023|valor_fundo|character varying|50|YES
+servicos_2022_2023|valor_ressarcimento|character varying|50|YES
+servicos_2022_2023|valor_multa|character varying|50|YES
+servicos_2022_2023|valor_juros|character varying|50|YES
+servicos_2022_2023|valor_perda|character varying|50|YES
+servicos_2022_2023|valor_pagamento|character varying|50|YES
+servicos_2022_2023|dias_atraso|text||YES
+servicos_2022_2023|multa_prevista|character varying|50|YES
+servicos_2022_2023|juro_previsto|character varying|50|YES
+servicos_2022_2023|desconto_previsto|character varying|50|YES
+servicos_2022_2023|status|character varying|50|YES
+servicos_2022_2023|saldo_devedor|character varying|50|YES
+servicos_2022_2023|total_a_pagar|character varying|50|YES
+servicos_2022_2023|pagamento_boleto|character varying|50|YES
+servicos_2022_2023|pagamento_dinheiro|character varying|50|YES
+servicos_2022_2023|pagamento_cheque|character varying|50|YES
+servicos_2022_2023|pagamento_cartao_credito|character varying|50|YES
+servicos_2022_2023|pagamento_cartao_debito|character varying|50|YES
+servicos_2022_2023|pagamento_transferencia|character varying|50|YES
+servicos_2022_2023|pagamento_pix|character varying|50|YES
+servicos_2022_2023|data_pagamento|character varying|50|YES
+servicos_2022_2023|data_liquidacao|character varying|50|YES
+servicos_2024_2025|nome_instituticao|character varying|50|YES
+servicos_2024_2025|contrato_status|character varying|50|YES
+servicos_2024_2025|contrato|text||YES
+servicos_2024_2025|contrato_relacionado|character varying|50|YES
+servicos_2024_2025|id_pessoa|text||YES
+servicos_2024_2025|id_matricula|text||YES
+servicos_2024_2025|status_matricula|character varying|50|YES
+servicos_2024_2025|polo|character varying|50|YES
+servicos_2024_2025|fatura_mes|text||YES
+servicos_2024_2025|fatura_ano|text||YES
+servicos_2024_2025|calendario_academico|text||YES
+servicos_2024_2025|curso|character varying|50|YES
+servicos_2024_2025|serie|character varying|50|YES
+servicos_2024_2025|turma|character varying|50|YES
+servicos_2024_2025|item|character varying|100|YES
+servicos_2024_2025|responsavel_financeiro|character varying|100|YES
+servicos_2024_2025|cpf_responsavel_financeiro|text||YES
+servicos_2024_2025|aluno|character varying|50|YES
+servicos_2024_2025|data_vencimento|character varying|50|YES
+servicos_2024_2025|valor_bruto|character varying|50|YES
+servicos_2024_2025|valor_liquido|character varying|50|YES
+servicos_2024_2025|valor_descontos|character varying|50|YES
+servicos_2024_2025|valor_cancelamentos|character varying|50|YES
+servicos_2024_2025|valor_financiamento|character varying|50|YES
+servicos_2024_2025|valor_estorno|character varying|50|YES
+servicos_2024_2025|valor_renegociacao|character varying|50|YES
+servicos_2024_2025|valor_fundo|character varying|50|YES
+servicos_2024_2025|valor_ressarcimento|character varying|50|YES
+servicos_2024_2025|valor_multa|character varying|50|YES
+servicos_2024_2025|valor_juros|character varying|50|YES
+servicos_2024_2025|valor_perda|character varying|50|YES
+servicos_2024_2025|valor_pagamento|character varying|50|YES
+servicos_2024_2025|dias_atraso|text||YES
+servicos_2024_2025|multa_prevista|character varying|50|YES
+servicos_2024_2025|juro_previsto|character varying|50|YES
+servicos_2024_2025|desconto_previsto|character varying|50|YES
+servicos_2024_2025|status|character varying|50|YES
+servicos_2024_2025|saldo_devedor|character varying|50|YES
+servicos_2024_2025|total_a_pagar|character varying|50|YES
+servicos_2024_2025|pagamento_boleto|character varying|50|YES
+servicos_2024_2025|pagamento_dinheiro|character varying|50|YES
+servicos_2024_2025|pagamento_cheque|character varying|50|YES
+servicos_2024_2025|pagamento_cartao_credito|character varying|50|YES
+servicos_2024_2025|pagamento_cartao_debito|character varying|50|YES
+servicos_2024_2025|pagamento_transferencia|character varying|50|YES
+servicos_2024_2025|pagamento_pix|character varying|50|YES
+servicos_2024_2025|data_pagamento|character varying|50|YES
+servicos_2024_2025|data_liquidacao|character varying|50|YES
+servicos_historico|nome_instituticao|character varying|50|YES
+servicos_historico|contrato_status|character varying|50|YES
+servicos_historico|contrato|text||YES
+servicos_historico|contrato_relacionado|character varying|50|YES
+servicos_historico|id_pessoa|text||YES
+servicos_historico|id_matricula|text||YES
+servicos_historico|status_matricula|character varying|50|YES
+servicos_historico|polo|character varying|50|YES
+servicos_historico|fatura_mes|text||YES
+servicos_historico|fatura_ano|text||YES
+servicos_historico|calendario_academico|text||YES
+servicos_historico|curso|character varying|50|YES
+servicos_historico|serie|character varying|50|YES
+servicos_historico|turma|character varying|50|YES
+servicos_historico|item|character varying|100|YES
+servicos_historico|responsavel_financeiro|character varying|100|YES
+servicos_historico|cpf_responsavel_financeiro|text||YES
+servicos_historico|aluno|character varying|50|YES
+servicos_historico|data_vencimento|character varying|50|YES
+servicos_historico|valor_bruto|character varying|50|YES
+servicos_historico|valor_liquido|character varying|50|YES
+servicos_historico|valor_descontos|character varying|50|YES
+servicos_historico|valor_cancelamentos|character varying|50|YES
+servicos_historico|valor_financiamento|character varying|50|YES
+servicos_historico|valor_estorno|character varying|50|YES
+servicos_historico|valor_renegociacao|character varying|50|YES
+servicos_historico|valor_fundo|character varying|50|YES
+servicos_historico|valor_ressarcimento|character varying|50|YES
+servicos_historico|valor_multa|character varying|50|YES
+servicos_historico|valor_juros|character varying|50|YES
+servicos_historico|valor_perda|character varying|50|YES
+servicos_historico|valor_pagamento|character varying|50|YES
+servicos_historico|dias_atraso|text||YES
+servicos_historico|multa_prevista|character varying|50|YES
+servicos_historico|juro_previsto|character varying|50|YES
+servicos_historico|desconto_previsto|character varying|50|YES
+servicos_historico|status|character varying|50|YES
+servicos_historico|saldo_devedor|character varying|50|YES
+servicos_historico|total_a_pagar|character varying|50|YES
+servicos_historico|pagamento_boleto|character varying|50|YES
+servicos_historico|pagamento_dinheiro|character varying|50|YES
+servicos_historico|pagamento_cheque|character varying|50|YES
+servicos_historico|pagamento_cartao_credito|character varying|50|YES
+servicos_historico|pagamento_cartao_debito|character varying|50|YES
+servicos_historico|pagamento_transferencia|character varying|50|YES
+servicos_historico|pagamento_pix|character varying|50|YES
+servicos_historico|data_pagamento|character varying|50|YES
+servicos_historico|data_liquidacao|character varying|50|YES
+student_code_unico|id_person|bigint||NO
+student_code_unico|name|text||NO
+student_code_unico|code_unif|character varying|50|NO
+student_code_unico|code_enrollment_code|character varying|50|YES
+student_code_unico|code_enrollment|character varying|50|YES
+student_code_unico|source|character varying|20|NO
+student_code_unico|created_at|timestamp without time zone||YES
+subject_code_main|instituicao|character varying|50|YES
+subject_code_main|course_name|character varying|50|YES
+subject_code_main|curriculum_name|character varying|50|YES
+subject_code_main|module_name|character varying|50|YES
+subject_code_main|subject_name|character varying|50|YES
+subject_code_main|subject_code_gennera|integer||YES
+subject_code_main|subject_code|character varying|4|YES
+tabela_professor_rm|Codigo do Professor|integer||YES
+tabela_professor_rm|Nome|character varying|50|YES
+tabela_professor_rm|Nome Social|character varying|50|YES
+tabela_professor_rm|Usuario|character varying|50|YES
+tabela_professor_rm|Chapa|character varying|50|YES
+tabela_professor_rm|Codigo|integer||YES
+tabela_professor_rm|Sexo|character varying|50|YES
+tabela_professor_rm|Data de nascimento|character varying|50|YES
+tabela_professor_rm|CPF|bigint||YES
+tabela_professor_rm|Apelido|character varying|50|YES
+tabela_professor_rm|Funcao do Folha de pagamento|character varying|50|YES
+tabela_professor_rm|Estado civil|character varying|50|YES
+tabela_professor_rm|Estado natal|character varying|50|YES
+tabela_professor_rm|Logradouro|character varying|64|YES
+tabela_professor_rm|Numero|character varying|50|YES
+tabela_professor_rm|Complemento|character varying|50|YES
+tabela_professor_rm|Bairro|character varying|50|YES
+tabela_professor_rm|Estado|character varying|50|YES
+tabela_professor_rm|Cidade|character varying|50|YES
+tabela_professor_rm|CEP|integer||YES
+tabela_professor_rm|Pais|character varying|50|YES
+tabela_professor_rm|Cart. de identidade|character varying|50|YES
+tabela_professor_rm|Naturalidade|character varying|50|YES
+tabela_professor_rm|E-Mail|character varying|50|YES
+tabela_professor_rm|Telefone 1|integer||YES
+tabela_professor_rm|Profissao|character varying|50|YES
+tabela_professor_rm|Grau de instrucao|character varying|50|YES
+tabela_professor_rm|Criado Por|character varying|50|YES
+tabela_professor_rm|Criado Em|character varying|50|YES
+tabela_professor_rm|Modificado Por|character varying|50|YES
+tabela_professor_rm|Modificado Em|character varying|50|YES
+tabela_professor_rm|serventia do cartorio|character varying|50|YES
+template|id_template|integer||NO
+template|id_catalog|integer||YES
+template|name|text||NO
+template|data|jsonb||NO
+template|copy_data|jsonb||NO
+un1health2025|Aluno|character varying|50|YES
+un1health2025|Turma|character varying|50|YES
+un1health2025|Tipo Sanguíneo|character varying|50|YES
+un1health2025|tiposang|character varying|3|YES
+un2health2025|Aluno|character varying|50|YES
+un2health2025|Turma|character varying|50|YES
+un2health2025|Tipo Sanguíneo|character varying|50|YES
+un2health2025|tiposang|character varying|3|YES
+work|id_work|integer||NO
+work|id_catalog|integer||NO
+work|id_template|integer||NO
+work|leader|jsonb||NO
+work_field|id_work_field|integer||NO
+work_field|id_work|integer||NO
+work_field|id_catalog|integer||NO
+work_field|tag|text||NO
+work_field|indicator1|text||YES
+work_field|indicator2|text||YES
+work_subfield|id_work_field|integer||NO
+work_subfield|code|text||YES
+work_subfield|value|text||YES
