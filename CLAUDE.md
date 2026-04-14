@@ -13,12 +13,11 @@ O trabalho consiste em criar views PostgreSQL no schema `export` que transformam
 
 ## Banco de Dados
 
-- **Host:** 192.168.1.91:5432
+- **Host:** (configurar via variavel de ambiente `DB_HOST`)
 - **Database:** Edf_bd_legado
-- **User:** postgres
-- **Password:** tisuporte123
+- **User:** (configurar via variavel de ambiente `DB_USER`)
+- **Password:** (configurar via variavel de ambiente `DB_PASS`)
 - **Encoding:** LATIN1 (OBRIGATORIO usar `PGCLIENTENCODING=LATIN1` em todo comando psql)
-- **psql path (Windows):** `"/c/Program Files/PostgreSQL/18/bin/psql.exe"`
 
 ### Schemas
 - `gennera_stg` - dados brutos importados do Gennera
@@ -26,7 +25,7 @@ O trabalho consiste em criar views PostgreSQL no schema `export` que transformam
 
 ### Comando padrao psql
 ```bash
-PGCLIENTENCODING=LATIN1 PGPASSWORD=tisuporte123 "/c/Program Files/PostgreSQL/18/bin/psql.exe" -h 192.168.1.91 -U postgres -d Edf_bd_legado
+PGCLIENTENCODING=LATIN1 PGPASSWORD=$DB_PASS psql -h $DB_HOST -U $DB_USER -d Edf_bd_legado
 ```
 
 ---

@@ -1,7 +1,7 @@
 # Relatório Consolidado — Migração Gennera → TOTVS RM
 
 **Data**: 2026-04-08
-**Conexão**: `192.168.1.91:5432 / Edf_bd_legado`
+**Conexão**: `<host>:5432 / Edf_bd_legado`
 **Schemas**: `gennera_stg` (origem, 54 tabelas) → `export` (destino TOTVS, 42 views)
 
 ---
