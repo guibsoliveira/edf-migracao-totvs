@@ -1,5 +1,6 @@
 # Credenciais e env
 .env
+CLAUDE.local.md
 credentials.json
 *.pem
 *.key
