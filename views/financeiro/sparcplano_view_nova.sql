@@ -32,12 +32,12 @@ WITH
 plan_catalog AS (
     SELECT
         sp."CODPLANOPGTO",
-        sp."CODPERLET"     AS ano,
+        sp."IDPERLET"     AS ano,
         sp."CODFILIAL",
         sp."CODTIPOCURSO",
         -- extrai segmento removendo o ano do final do NOME
         TRIM(regexp_replace(sp."NOME",
-            '\s+' || sp."CODPERLET" || '\s*$', '')) AS segmento
+            '\s+' || sp."IDPERLET" || '\s*$', '')) AS segmento
     FROM export.splanopgto sp
 ),
 

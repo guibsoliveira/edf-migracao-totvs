@@ -27,12 +27,12 @@ WITH
 plan_parsed AS (
     SELECT
         sp."CODCOLIGADA",
-        sp."CODPERLET",
+        sp."IDPERLET",
         sp."CODPLANOPGTO",
         sp."CODTIPOCURSO",
         sp."CODFILIAL",
         TRIM(regexp_replace(sp."NOME",
-            '\s+' || sp."CODPERLET" || '\s*$', '')) AS seg,
+            '\s+' || sp."IDPERLET" || '\s*$', '')) AS seg,
 
         -- ── CODCURSO ──
         CASE
@@ -114,7 +114,7 @@ turnos(turno) AS (
 expanded AS (
     SELECT
         pp."CODCOLIGADA",
-        pp."CODPERLET",
+        pp."IDPERLET",
         pp."CODPLANOPGTO",
         pp."CODTIPOCURSO",
         pp.codcurso,
@@ -125,8 +125,8 @@ expanded AS (
     JOIN export.shabilitacao h
         ON h."CODCURSO" = pp.codcurso
         AND (pp.hab_start IS NULL
-             OR (h."CODHABILITACAO" >= pp.hab_start
-                 AND h."CODHABILITACAO" <= pp.hab_end))
+             OR (h."CODHABILITACAO"::integer >= pp.hab_start
+                 AND h."CODHABILITACAO"::integer <= pp.hab_end))
     JOIN turnos t ON
         (pp.turno_tipo = 'INTEGRAL' AND t.turno = 'Integral')
         OR (pp.turno_tipo = 'MEIO' AND t.turno IN ('Manhã', 'Tarde'))
@@ -136,7 +136,7 @@ expanded AS (
 -- ─── SELECT FINAL ───────────────────────────────────────────────────
 SELECT
     e."CODCOLIGADA",
-    e."CODPERLET"::character varying(10)           AS "CODPERLET",
+    e."IDPERLET"::character varying(10)            AS "IDPERLET",
     e."CODPLANOPGTO"::character varying(10)        AS "CODPLANOPGTO",
     e."CODTIPOCURSO",
     e.codcurso::character varying(10)              AS "CODCURSO",
@@ -148,6 +148,6 @@ FROM expanded e
 JOIN export.sgrade g
     ON g.codcurso = e.codcurso
     AND g.codhabilitacao::text = e."CODHABILITACAO"::text
-    AND g.codgrade = e."CODPERLET"
-ORDER BY e."CODPERLET", e."CODFILIAL", e."CODPLANOPGTO",
+    AND g.codgrade = e."IDPERLET"
+ORDER BY e."IDPERLET", e."CODFILIAL", e."CODPLANOPGTO",
          e."CODHABILITACAO", e.turno;

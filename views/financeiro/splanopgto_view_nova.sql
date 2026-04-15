@@ -189,7 +189,7 @@ base AS (
 )
 SELECT
     1                                                               AS "CODCOLIGADA",
-    ano::character varying(10)                                      AS "CODPERLET",
+    ano::character varying(10)                                      AS "IDPERLET",
     (RIGHT(ano, 2) || codfilial::text || LPAD(seq::text, 3, '0'))::character varying(10)
                                                                     AS "CODPLANOPGTO",
     LEFT('Plano ' || segmento || ' ' || ano || ' - Filial ' || codfilial::text, 60)::character varying(60)
@@ -200,6 +200,7 @@ SELECT
     0::numeric(10,4)                                                AS "DESCONTO",
     1                                                               AS "CODTIPOCURSO",
     codfilial                                                       AS "CODFILIAL",
-    'N'::character varying(1)                                       AS "MATRICULALIVRE"
+    'N'::character varying(1)                                       AS "MATRICULALIVRE",
+    NULL::character varying(1)                                      AS "TIPOBLOQUEIOVLRBASEPERSONALIZ"
 FROM base
 ORDER BY ano, codfilial, seq;
