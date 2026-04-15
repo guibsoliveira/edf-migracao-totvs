@@ -140,9 +140,9 @@ SELECT
     e."CODPLANOPGTO"::character varying(10)        AS "CODPLANOPGTO",
     e."CODTIPOCURSO",
     e.codcurso::character varying(10)              AS "CODCURSO",
-    e."CODHABILITACAO"::character varying(10)      AS "CODHABILITACAO",
+    e."CODHABILITACAO"::character varying(10)      AS "IDHABILITACAOFILIAL",
     g.codgrade::character varying(10)              AS "CODGRADE",
-    e.turno::character varying(15)                 AS "TURNO",
+    e.turno::character varying(15)                 AS "CODTURNO",
     e."CODFILIAL"
 FROM expanded e
 JOIN export.sgrade g
