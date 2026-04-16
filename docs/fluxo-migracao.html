@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluxo de Migracao - Escola do Futuro | Gennera para TOTVS RM</title>
+<style>
+  :root {
+    --blue: #1a73e8;
+    --blue-light: #e8f0fe;
+    --green: #0d904f;
+    --green-light: #e6f4ea;
+    --orange: #e37400;
+    --orange-light: #fef7e0;
+    --red: #d93025;
+    --red-light: #fce8e6;
+    --gray: #5f6368;
+    --gray-light: #f8f9fa;
+    --border: #dadce0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: #f0f2f5; color: #202124; line-height: 1.6; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+  /* Header */
+  .header { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white; padding: 40px; border-radius: 16px; margin-bottom: 24px; }
+  .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+  .header .subtitle { font-size: 16px; opacity: 0.9; }
+  .header .meta { margin-top: 16px; display: flex; gap: 24px; font-size: 14px; opacity: 0.8; }
+
+  /* Cards */
+  .card { background: white; border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+  .card h2 { font-size: 20px; color: #202124; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid var(--blue); }
+  .card h3 { font-size: 16px; color: var(--gray); margin: 16px 0 8px; }
+
+  /* Stats */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: white; border-radius: 12px; padding: 20px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); border: 1px solid var(--border); }
+  .stat-card .number { font-size: 36px; font-weight: 700; }
+  .stat-card .label { font-size: 13px; color: var(--gray); margin-top: 4px; }
+  .stat-card.blue .number { color: var(--blue); }
+  .stat-card.green .number { color: var(--green); }
+  .stat-card.orange .number { color: var(--orange); }
+  .stat-card.red .number { color: var(--red); }
+
+  /* Flow Diagram */
+  .flow { display: flex; align-items: center; gap: 12px; padding: 20px; overflow-x: auto; }
+  .flow-box { min-width: 160px; padding: 16px; border-radius: 12px; text-align: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .flow-arrow { font-size: 24px; color: var(--gray); flex-shrink: 0; }
+  .flow-box.source { background: #e3f2fd; border: 2px solid #1565c0; color: #1565c0; }
+  .flow-box.process { background: #fff3e0; border: 2px solid #ef6c00; color: #ef6c00; }
+  .flow-box.dest { background: #e8f5e9; border: 2px solid #2e7d32; color: #2e7d32; }
+
+  /* Tables */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { background: var(--gray-light); color: var(--gray); font-weight: 600; text-align: left; padding: 10px 12px; border-bottom: 2px solid var(--border); }
+  td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:hover { background: #f8f9fa; }
+
+  /* Status badges */
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge.done { background: var(--green-light); color: var(--green); }
+  .badge.progress { background: var(--orange-light); color: var(--orange); }
+  .badge.pending { background: var(--red-light); color: var(--red); }
+  .badge.cancelled { background: var(--gray-light); color: var(--gray); text-decoration: line-through; }
+  .badge.rewrite { background: #f3e5f5; color: #7b1fa2; }
+
+  /* Phase sections */
+  .phase { margin: 20px 0; padding: 20px; border-radius: 12px; border-left: 4px solid; }
+  .phase.phase1 { border-color: var(--blue); background: var(--blue-light); }
+  .phase.phase2 { border-color: var(--orange); background: var(--orange-light); }
+  .phase.phase3 { border-color: var(--green); background: var(--green-light); }
+  .phase h3 { margin-bottom: 12px; }
+  .phase ul { padding-left: 20px; }
+  .phase li { margin: 6px 0; }
+
+  /* Institution grid */
+  .inst-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .inst-card { padding: 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--gray-light); }
+  .inst-card h4 { color: var(--blue); margin-bottom: 8px; }
+  .inst-card .detail { font-size: 13px; color: var(--gray); }
+
+  /* API section */
+  .api-group { margin: 16px 0; }
+  .api-group h4 { color: var(--blue); font-size: 15px; margin-bottom: 8px; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .endpoint { font-family: 'Consolas', 'Courier New', monospace; font-size: 12px; color: #1565c0; background: #e3f2fd; padding: 2px 6px; border-radius: 4px; }
+
+  /* Priority indicator */
+  .priority-high { color: var(--red); font-weight: 700; }
+  .priority-med { color: var(--orange); font-weight: 600; }
+  .priority-low { color: var(--gray); }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .checklist li::before { content: "[ ] "; font-family: monospace; color: var(--gray); }
+  .checklist li.done::before { content: "[x] "; color: var(--green); }
+
+  /* Tooltip */
+  .info { cursor: help; color: var(--blue); text-decoration: underline dotted; }
+
+  /* Print styles */
+  @media print {
+    body { background: white; }
+    .card { box-shadow: none; border: 1px solid #ccc; page-break-inside: avoid; }
+    .header { background: #1a73e8 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- ============================================================ -->
+<!-- HEADER -->
+<!-- ============================================================ -->
+<div class="header">
+  <h1>Fluxo de Migracao Gennera &rarr; TOTVS RM</h1>
+  <div class="subtitle">Escola do Futuro (EDF) &mdash; Educacao Basica</div>
+  <div class="meta">
+    <span>Data: 16/04/2026</span>
+    <span>Responsavel: Guilherme Oliveira</span>
+    <span>Versao: 1.0</span>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- DASHBOARD -->
+<!-- ============================================================ -->
+<div class="stats">
+  <div class="stat-card green">
+    <div class="number">39</div>
+    <div class="label">Views Concluidas</div>
+  </div>
+  <div class="stat-card orange">
+    <div class="number">2</div>
+    <div class="label">Em Andamento</div>
+  </div>
+  <div class="stat-card red">
+    <div class="number">5</div>
+    <div class="label">Pendentes</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="number">80+</div>
+    <div class="label">Endpoints API Gennera</div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- VISAO GERAL -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>1. O Que Estamos Fazendo</h2>
+  <p>Migrando <strong>todos os dados</strong> da Escola do Futuro do sistema <strong>Gennera</strong> para o <strong>TOTVS RM Educacional</strong>. Isso inclui dados de <em>pessoas</em>, <em>academicos</em> (cursos, turmas, matriculas, notas) e <em>financeiros</em> (contratos, parcelas, bolsas).</p>
+
+  <h3>Fluxo Principal</h3>
+  <div class="flow">
+    <div class="flow-box source">
+      <div style="font-size:24px">&#128218;</div>
+      <div>GENNERA</div>
+      <div style="font-size:11px;font-weight:400;margin-top:4px">Sistema atual</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box source">
+      <div style="font-size:24px">&#127760;</div>
+      <div>API Gennera</div>
+      <div style="font-size:11px;font-weight:400;margin-top:4px">Dados vivos</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box process">
+      <div style="font-size:24px">&#128451;</div>
+      <div>PostgreSQL</div>
+      <div style="font-size:11px;font-weight:400;margin-top:4px">Banco intermediario<br>(gennera_stg + export)</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box process">
+      <div style="font-size:24px">&#9881;</div>
+      <div>Views SQL</div>
+      <div style="font-size:11px;font-weight:400;margin-top:4px">Transformacao<br>para formato TOTVS</div>
+    </div>
+    <div class="flow-arrow">&rarr;</div>
+    <div class="flow-box dest">
+      <div style="font-size:24px">&#9989;</div>
+      <div>TOTVS RM</div>
+      <div style="font-size:11px;font-weight:400;margin-top:4px">Importador Oracle</div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- ESTRUTURA DA ESCOLA -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>2. Estrutura da Escola</h2>
+  <div class="inst-grid">
+    <div class="inst-card">
+      <h4>UN1 &mdash; Filial 1 (API ID: 320)</h4>
+      <div class="detail">
+        <strong>Cursos:</strong> EF1 (3&ordm;-5&ordm; Ano) + EF2 (6&ordm;-9&ordm; Ano) + EM (1&ordf;-3&ordf; Serie)<br>
+        <strong>Turnos:</strong> Tudo Integral<br>
+        <strong>Alunos 2025:</strong> ~350<br>
+        <strong>Contratos API:</strong> 11.369
+      </div>
+    </div>
+    <div class="inst-card">
+      <h4>UN2 &mdash; Filial 2 (API ID: 321)</h4>
+      <div class="detail">
+        <strong>Cursos:</strong> EI (N2, N3, K1, K2) + EF1 (1&ordm;-2&ordm; Ano)<br>
+        <strong>Turnos:</strong> EF1=Integral / EI=Integral, Manha, Tarde<br>
+        <strong>Alunos 2025:</strong> ~280<br>
+        <strong>Contratos API:</strong> 3.802
+      </div>
+    </div>
+    <div class="inst-card">
+      <h4>Base de Testes (API ID: 873)</h4>
+      <div class="detail">
+        <strong>Uso:</strong> Ambiente de teste Gennera<br>
+        <strong>Nao usado na migracao</strong>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:12px;font-size:13px;color:var(--gray)">
+    <strong>Periodos letivos:</strong> 2021, 2022, 2023, 2024, 2025, 2026 &nbsp;|&nbsp;
+    <strong>Coligada:</strong> sempre 1 &nbsp;|&nbsp;
+    <strong>Tipo de curso:</strong> sempre 1
+  </p>
+</div>
+
+<!-- ============================================================ -->
+<!-- FONTES DE DADOS -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>3. Fontes de Dados</h2>
+  <table>
+    <tr>
+      <th style="width:25%">Fonte</th>
+      <th style="width:15%">Tipo</th>
+      <th>Descricao</th>
+      <th style="width:15%">Status</th>
+    </tr>
+    <tr>
+      <td><strong>API Gennera</strong><br><span style="font-size:12px;color:var(--gray)">api2.gennera.com.br</span></td>
+      <td>REST API</td>
+      <td>Dados vivos e atualizados do Gennera. 80+ endpoints. Autenticacao via <code>x-access-token</code> (JWT).</td>
+      <td><span class="badge done">Ativa</span></td>
+    </tr>
+    <tr>
+      <td><strong>Banco PostgreSQL</strong><br><span style="font-size:12px;color:var(--gray)">schema gennera_stg</span></td>
+      <td>Dump/CSV</td>
+      <td>Historico 2021-2025 importado. 55 tabelas. Serve como base para as views SQL. Pode estar desatualizado em relacao a API.</td>
+      <td><span class="badge done">Populado</span></td>
+    </tr>
+    <tr>
+      <td><strong>Views Export</strong><br><span style="font-size:12px;color:var(--gray)">schema export</span></td>
+      <td>SQL Views</td>
+      <td>43 views que transformam gennera_stg no formato TOTVS RM. Lidas pelo importador TOTVS.</td>
+      <td><span class="badge progress">39/46 prontas</span></td>
+    </tr>
+  </table>
+
+  <h3 style="margin-top:20px">Mapeamento de IDs entre sistemas</h3>
+  <table>
+    <tr><th>ID</th><th>API Gennera</th><th>servicos_historico (DB)</th><th>enrollment (DB)</th><th>Observacao</th></tr>
+    <tr>
+      <td><strong>Pessoa</strong></td>
+      <td>persons.idPerson</td>
+      <td>id_pessoa</td>
+      <td style="color:var(--red)">id_person (DIFERENTE!)</td>
+      <td>API e servicos_historico usam o MESMO ID. enrollment usa outro namespace.</td>
+    </tr>
+    <tr>
+      <td><strong>Matricula</strong></td>
+      <td>enrollments.idEnrollment</td>
+      <td>id_matricula</td>
+      <td style="color:var(--red)">id_enrollment (DIFERENTE!)</td>
+      <td>API e servicos_historico usam o MESMO ID.</td>
+    </tr>
+    <tr>
+      <td><strong>Contrato</strong></td>
+      <td>contracts.hash</td>
+      <td>contrato</td>
+      <td>via enrollment_contract</td>
+      <td>Hash de 20 digitos = contrato no servicos_historico.</td>
+    </tr>
+    <tr>
+      <td><strong>RA</strong></td>
+      <td>-</td>
+      <td>-</td>
+      <td>student_code_unico.code_unif</td>
+      <td>Registro academico. Gerado no enrollment_code. Formato: YYYYNNNNNN</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- SEQUENCIA DE IMPORTACAO TOTVS -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>4. Sequencia Completa de Importacao TOTVS</h2>
+  <p style="margin-bottom:16px;color:var(--gray)">Ordem obrigatoria definida pelo consultor TOTVS. Cada view depende das anteriores estarem importadas.</p>
+  <table>
+    <tr>
+      <th style="width:5%">#</th>
+      <th style="width:22%">Template</th>
+      <th style="width:12%">Status</th>
+      <th style="width:30%">Modulo TOTVS</th>
+      <th>Fonte de Dados / API para validacao</th>
+    </tr>
+    <!-- BLOCO ACADEMICO -->
+    <tr style="background:#e3f2fd"><td colspan="5"><strong>BLOCO ACADEMICO</strong></td></tr>
+    <tr><td>1</td><td>SINSTITUICAO</td><td><span class="badge done">Concluido</span></td><td>Educacional &gt; Auxiliares &gt; Instituicao</td><td><span class="endpoint">GET /institutions/:id</span></td></tr>
+    <tr><td>2</td><td>SHORARIO</td><td><span class="badge done">Concluido</span></td><td>Turnos e Horarios</td><td><span class="endpoint">GET /classes/:id/timetables</span></td></tr>
+    <tr><td>3</td><td>SCURSO</td><td><span class="badge done">Concluido</span></td><td>Educacional &gt; Cursos</td><td><span class="endpoint">GET /institutions/:id/courses</span></td></tr>
+    <tr><td>4</td><td>SHABILITACAO</td><td><span class="badge done">Concluido</span></td><td>Cursos &gt; Series</td><td><span class="endpoint">GET /courses/:id/curriculums/:id/modules</span></td></tr>
+    <tr><td>5</td><td>SPLETIVO</td><td><span class="badge done">Concluido</span></td><td>Periodos Letivos</td><td><span class="endpoint">GET /institutions/:id/academicCalendars</span></td></tr>
+    <tr><td>6</td><td>SDISCIPLINA</td><td><span class="badge done">Concluido</span></td><td>Disciplinas</td><td><span class="endpoint">GET /courses/.../modules/:id/subjects</span></td></tr>
+
+    <!-- BLOCO PESSOAS -->
+    <tr style="background:#e8f5e9"><td colspan="5"><strong>BLOCO PESSOAS</strong></td></tr>
+    <tr><td>7</td><td>PPESSOA</td><td><span class="badge done">Concluido</span></td><td>Avaliacao &gt; Pessoas</td><td><span class="endpoint">GET /institutions/:id/persons</span></td></tr>
+    <tr><td>8</td><td>FCFO</td><td><span class="badge done">Concluido</span></td><td>Financeira &gt; Clientes/Fornecedores</td><td><span class="endpoint">GET /institutions/:id/persons/:id</span></td></tr>
+    <tr><td>9</td><td>SALUNO</td><td><span class="badge done">Concluido</span></td><td>Educacional &gt; Alunos</td><td><span class="endpoint">GET /classes/:id/students</span></td></tr>
+    <tr><td>10</td><td>SHISTALUNOCOL</td><td><span class="badge done">Concluido</span></td><td>Alunos &gt; Historico</td><td><span class="endpoint">GET /persons/:id/enrollmentRecords</span></td></tr>
+    <tr><td>11</td><td>SHISTDISCCOL</td><td><span class="badge done">Concluido</span></td><td>Historico &gt; Disciplinas</td><td><span class="endpoint">GET /enrollmentRecords/:id/subjects</span></td></tr>
+
+    <!-- BLOCO BACKOFFICE -->
+    <tr style="background:#fff3e0"><td colspan="5"><strong>BLOCO BACKOFFICE</strong></td></tr>
+    <tr><td>12</td><td>GCCUSTO</td><td><span class="badge done">Concluido</span></td><td>Gestao Contabil &gt; Centro Custos</td><td>Manual</td></tr>
+    <tr><td>13</td><td>FLAN</td><td><span class="badge done">Concluido</span></td><td>Financeira &gt; Lancamentos</td><td><span class="endpoint">GET /institutions/:id/payments</span></td></tr>
+
+    <!-- BLOCO CURRICULO -->
+    <tr style="background:#f3e5f5"><td colspan="5"><strong>BLOCO CURRICULO E OFERTA</strong></td></tr>
+    <tr><td>14</td><td>SGRADE</td><td><span class="badge done">Concluido</span></td><td>Matrizes Curriculares</td><td><span class="endpoint">GET /academicCalendars</span></td></tr>
+    <tr><td>15</td><td>SPERIODO</td><td><span class="badge done">Concluido</span></td><td>Periodos Letivos</td><td><span class="endpoint">GET /academicCalendars/:id/periods</span></td></tr>
+    <tr><td>16</td><td>SDISCGRADE</td><td><span class="badge done">Concluido</span></td><td>Matrizes &gt; Disciplinas</td><td><span class="endpoint">GET /courses/.../subjects</span></td></tr>
+    <tr><td>17</td><td>SHABILITACAOFILIAL</td><td><span class="badge rewrite">Reimportar</span></td><td>Cursos &gt; Series</td><td>Faltam turnos Manha/Tarde para EI UN2</td></tr>
+    <tr><td>18</td><td>SHABILITACAOFILIALPL</td><td><span class="badge done">Concluido</span></td><td>Parametrizacao por Curso</td><td>Depende de #17</td></tr>
+    <tr><td>21</td><td>SPROFESSOR</td><td><span class="badge done">Concluido</span></td><td>Professores</td><td><span class="endpoint">GET /academicCalendars/:id/professors</span></td></tr>
+    <tr><td>22</td><td>STURMA</td><td><span class="badge done">Concluido</span></td><td>Turmas</td><td><span class="endpoint">GET /classes/:id</span></td></tr>
+    <tr><td>23</td><td>STURMADISC</td><td><span class="badge done">Concluido</span></td><td>Turmas &gt; Disciplinas</td><td><span class="endpoint">GET /classes/:id/diaries</span></td></tr>
+    <tr><td>24</td><td>SPROFESSORTURMA</td><td><span class="badge done">Concluido</span></td><td>Professores &gt; Turmas</td><td><span class="endpoint">GET /diaries/:id/professors</span></td></tr>
+    <tr><td>25</td><td>SHORARIOTURMA</td><td><span class="badge done">Concluido</span></td><td>Horarios da Turma</td><td><span class="endpoint">GET /classes/:id/timetables</span></td></tr>
+    <tr><td>26</td><td>SHORARIOPROFESSOR</td><td><span class="badge done">Concluido</span></td><td>Horarios do Professor</td><td><span class="endpoint">GET /academicCalendars/:id/timetables</span></td></tr>
+    <tr><td>27</td><td>SETAPAS</td><td><span class="badge done">Concluido</span></td><td>Etapas</td><td><span class="endpoint">GET /academicCalendars/:id/periods</span></td></tr>
+    <tr><td>28</td><td>SPROVAS</td><td><span class="badge done">Concluido</span></td><td>Avaliacoes</td><td><span class="endpoint">GET /diaries/:id/exams</span></td></tr>
+
+    <!-- BLOCO MATRICULAS -->
+    <tr style="background:#e8f5e9"><td colspan="5"><strong>BLOCO MATRICULAS</strong></td></tr>
+    <tr><td>29</td><td>SHABILITACAOALUNO</td><td><span class="badge done">Concluido</span></td><td>-</td><td><span class="endpoint">GET /persons/:id/enrollments</span></td></tr>
+    <tr><td>30</td><td>SMATRICPL</td><td><span class="badge done">Concluido</span></td><td>Matriculas no Periodo</td><td><span class="endpoint">GET /enrollments/:id</span></td></tr>
+    <tr><td>31</td><td>SMATRICULA</td><td><span class="badge done">Concluido</span></td><td>Matricula Isolada</td><td><span class="endpoint">GET /enrollments/:id/subjects</span></td></tr>
+
+    <!-- BLOCO NOTAS/FREQUENCIA -->
+    <tr style="background:#e3f2fd"><td colspan="5"><strong>BLOCO NOTAS E FREQUENCIA</strong></td></tr>
+    <tr><td>32</td><td>SNOTAETAPA</td><td><span class="badge done">Concluido</span></td><td>Notas por Etapa</td><td><span class="endpoint">GET /diaries/:id/students/:id/periodAverages</span></td></tr>
+    <tr><td>33</td><td>SNOTAS</td><td><span class="badge done">Concluido</span></td><td>Notas</td><td><span class="endpoint">GET /diaries/:id/grades</span></td></tr>
+    <tr><td>34</td><td>SPLANOAULA</td><td><span class="badge done">Concluido</span></td><td>Plano de Aula</td><td><span class="endpoint">GET /diaries/:id/lessons</span></td></tr>
+    <tr><td>35</td><td>SFREQUENCIA</td><td><span class="badge done">Concluido</span></td><td>Frequencia</td><td><span class="endpoint">GET /diaries/:id/attendances</span></td></tr>
+
+    <!-- BLOCO FINANCEIRO -->
+    <tr style="background:#fce4ec"><td colspan="5"><strong style="color:var(--red)">BLOCO FINANCEIRO (foco atual)</strong></td></tr>
+    <tr><td>36</td><td>SSERVICO</td><td><span class="badge done">Concluido</span></td><td>Financeiro &gt; Servicos</td><td><span class="endpoint">GET /institutions/:id/items</span> (347 itens UN1)</td></tr>
+    <tr><td>37</td><td>SBOLSA</td><td><span class="badge done">Concluido</span></td><td>Financeiro &gt; Bolsas</td><td><span class="endpoint">GET /institutions/:id/discounts</span> (233 UN1)</td></tr>
+    <tr><td>38</td><td>SBOLSAPLETIVO</td><td><span class="badge done">Concluido</span></td><td>Bolsas por Periodo</td><td>Derivado de SBOLSA</td></tr>
+    <tr><td>39</td><td>SPLANOPGTO</td><td><span class="badge done">Concluido</span></td><td>Planos de Pagamento</td><td><span class="endpoint">GET /campaigns/:id/plans</span></td></tr>
+    <tr><td>40</td><td>SPARCPLANO</td><td><span class="badge cancelled">Cancelada</span></td><td>Parcelas do Plano</td><td>Consultor disse que SPARCELA substitui</td></tr>
+    <tr><td>41</td><td>SHABMODELOPGTO</td><td><span class="badge done">Concluido</span></td><td>Modelo Pagamento x Curso</td><td>Derivado de SPLANOPGTO + SHABILITACAO</td></tr>
+    <tr style="background:#fff9c4">
+      <td><strong>42</strong></td>
+      <td><strong>SCONTRATO</strong></td>
+      <td><span class="badge rewrite">Reescrever</span></td>
+      <td>Financeiro &gt; Contratos</td>
+      <td><span class="priority-high">ALTA</span> &mdash; <span class="endpoint">GET /contracts + /contracts/:id/detailed</span></td>
+    </tr>
+    <tr style="background:#fff9c4">
+      <td><strong>43</strong></td>
+      <td><strong>SPARCELA</strong></td>
+      <td><span class="badge progress">Em andamento</span></td>
+      <td>Financeiro &gt; Parcelas</td>
+      <td><span class="priority-high">ALTA</span> &mdash; <span class="endpoint">GET /contracts/:id/invoices</span></td>
+    </tr>
+    <tr style="background:#fff9c4">
+      <td><strong>44</strong></td>
+      <td><strong>SBOLSAALUNO</strong></td>
+      <td><span class="badge pending">Pendente</span></td>
+      <td>Bolsas por Aluno</td>
+      <td><span class="priority-high">ALTA</span> &mdash; <span class="endpoint">GET /contracts/:id/detailed</span> (purchases.discounts)</td>
+    </tr>
+    <tr style="background:#fff9c4">
+      <td>45</td>
+      <td>SLAN</td>
+      <td><span class="badge pending">Pendente</span></td>
+      <td>Lancamentos Educacional</td>
+      <td><span class="priority-med">MEDIA</span></td>
+    </tr>
+    <tr>
+      <td>51</td>
+      <td>FDADOSPGTO</td>
+      <td><span class="badge pending">Pendente</span></td>
+      <td>Dados de Pagamento</td>
+      <td><span class="priority-med">MEDIA</span> &mdash; <span class="endpoint">GET /payments/:id</span></td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- CATALOGO API -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>5. Catalogo de Endpoints da API Gennera</h2>
+  <p style="margin-bottom:16px;color:var(--gray)">Base URL: <code>https://api2.gennera.com.br</code> &nbsp;|&nbsp; Auth: header <code>x-access-token</code> com JWT</p>
+
+  <div class="api-group">
+    <h4>Institucional (3 endpoints)</h4>
+    <table>
+      <tr><th>Endpoint</th><th>Retorno</th><th>Volume</th></tr>
+      <tr><td><span class="endpoint">GET /institutions</span></td><td>Lista instituicoes</td><td>3</td></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id</span></td><td>Detalhe (CNPJ, endereco, diretor)</td><td>1</td></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/campuses</span></td><td>Polos</td><td>?</td></tr>
+    </table>
+  </div>
+
+  <div class="api-group">
+    <h4>Academico (12 endpoints)</h4>
+    <table>
+      <tr><th>Endpoint</th><th>Retorno</th><th>Volume</th></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/courses</span></td><td>Cursos</td><td>2-3/unidade</td></tr>
+      <tr><td><span class="endpoint">GET /courses/:id/curriculums</span></td><td>Grades curriculares</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /curriculums/:id/modules</span></td><td>Modulos/Series</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /modules/:id/subjects</span></td><td>Disciplinas</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/academicCalendars</span></td><td>Calendarios</td><td>6 (2021-2026)</td></tr>
+      <tr><td><span class="endpoint">GET /academicCalendars/:id/periods</span></td><td>Periodos (trimestres)</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /academicCalendars/:id/curriculumOffers</span></td><td>Ofertas curriculares</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /curriculumOffers/:id/classes</span></td><td>Turmas</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /classes/:id</span></td><td>Detalhe da turma</td><td>1</td></tr>
+      <tr><td><span class="endpoint">GET /classes/:id/students</span></td><td>Alunos da turma</td><td>~20-30</td></tr>
+      <tr><td><span class="endpoint">GET /classes/:id/diaries</span></td><td>Diarios da turma</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /classes/:id/timetables</span></td><td>Horarios da turma</td><td>?</td></tr>
+    </table>
+  </div>
+
+  <div class="api-group">
+    <h4>Diarios, Notas e Frequencia (12 endpoints)</h4>
+    <table>
+      <tr><th>Endpoint</th><th>Retorno</th><th>Volume</th></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id</span></td><td>Detalhe do diario</td><td>1</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/students</span></td><td>Alunos do diario</td><td>~25</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/exams</span></td><td>Avaliacoes</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/grades</span></td><td>Notas</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/students/:id/grades</span></td><td>Notas de 1 aluno</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/students/:id/periodAverages</span></td><td>Medias por periodo</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/attendances</span></td><td>Frequencia do diario</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/lessons</span></td><td>Aulas registradas</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/contents</span></td><td>Conteudos ministrados</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/professors</span></td><td>Professores do diario</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/freeAssessments</span></td><td>Pareceres descritivos</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /diaries/:id/persons/:id/grades</span></td><td>Notas por pessoa</td><td>?</td></tr>
+    </table>
+  </div>
+
+  <div class="api-group">
+    <h4>Matriculas (10 endpoints)</h4>
+    <table>
+      <tr><th>Endpoint</th><th>Retorno</th><th>Volume</th></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/campaigns</span></td><td>Campanhas de matricula</td><td>~16/unidade</td></tr>
+      <tr><td><span class="endpoint">GET /campaigns/:id/enrollments</span></td><td>Matriculas de campanha</td><td>~200-600</td></tr>
+      <tr><td><span class="endpoint">GET /campaigns/:id/enrollments/:id</span></td><td>Detalhe de matricula</td><td>1</td></tr>
+      <tr><td><span class="endpoint">GET /campaigns/:id/enrollments/:id/transitions</span></td><td>Historico de status</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /enrollments/:id</span></td><td>Matricula por ID</td><td>1</td></tr>
+      <tr><td><span class="endpoint">GET /enrollments/:id/contracts</span></td><td>Contratos da matricula</td><td>2-5</td></tr>
+      <tr><td><span class="endpoint">GET /enrollments/:id/subjects</span></td><td>Disciplinas matriculadas</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /persons/:id/enrollments</span></td><td>Matriculas da pessoa</td><td>1-5 por aluno</td></tr>
+      <tr><td><span class="endpoint">GET /persons/:id/enrollmentRecords</span></td><td>Registros academicos</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /enrollmentRecords/:id/subjects</span></td><td>Disciplinas do registro</td><td>?</td></tr>
+    </table>
+  </div>
+
+  <div class="api-group">
+    <h4>Pessoas (4 endpoints)</h4>
+    <table>
+      <tr><th>Endpoint</th><th>Retorno</th><th>Volume</th></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/persons</span></td><td>Todas as pessoas</td><td>~9.300/unidade</td></tr>
+      <tr><td><span class="endpoint">GET /persons/:id</span></td><td>Detalhe (CPF, endereco, contato)</td><td>1</td></tr>
+      <tr><td><span class="endpoint">GET /persons/:id/relationships</span></td><td>Relacionamentos (pais, responsaveis)</td><td>?</td></tr>
+      <tr><td><span class="endpoint">GET /persons/:id/contentsPlannedExecuted</span></td><td>Planejado x Executado</td><td>?</td></tr>
+    </table>
+  </div>
+
+  <div class="api-group">
+    <h4 style="color:var(--red)">Financeiro (11 endpoints) &mdash; CRITICO</h4>
+    <table>
+      <tr><th>Endpoint</th><th>Retorno</th><th>Volume</th><th>Uso</th></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/contracts</span></td><td>Todos contratos</td><td>11k UN1 / 3.8k UN2</td><td><strong>SCONTRATO</strong></td></tr>
+      <tr><td><span class="endpoint">GET /contracts/:id</span></td><td>Contrato basico</td><td>1</td><td>Validacao</td></tr>
+      <tr><td><span class="endpoint">GET /contracts/:id/detailed</span></td><td>Contrato + compras + pessoa</td><td>1</td><td><strong>SCONTRATO + SBOLSAALUNO</strong></td></tr>
+      <tr><td><span class="endpoint">GET /contracts/:id/invoices</span></td><td>Faturas/parcelas</td><td>10-12</td><td><strong>SPARCELA</strong></td></tr>
+      <tr><td><span class="endpoint">GET /contracts/:id/invoices/:id/payments</span></td><td>Pagamentos de fatura</td><td>?</td><td>Reconciliacao</td></tr>
+      <tr><td><span class="endpoint">GET /invoices?cycleStart=&cycleEnd=</span></td><td>Faturas por periodo</td><td>~600/mes</td><td>Visao mensal</td></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/payments</span></td><td>Todos pagamentos</td><td>18k/unidade</td><td>FLAN / Reconciliacao</td></tr>
+      <tr><td><span class="endpoint">GET /payments/:id</span></td><td>Pagamento detalhado</td><td>1</td><td>FDADOSPGTO</td></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/items</span></td><td>Catalogo de servicos</td><td>~347</td><td><strong>SSERVICO</strong> (validacao)</td></tr>
+      <tr><td><span class="endpoint">GET /institutions/:id/discounts</span></td><td>Catalogo de descontos</td><td>~233</td><td><strong>SBOLSA</strong> (validacao)</td></tr>
+      <tr><td><span class="endpoint">GET /campaigns/:id/plans</span></td><td>Planos de campanha</td><td>?</td><td><strong>SPLANOPGTO</strong> (validacao)</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- FLUXO IDEAL -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>6. Fluxo Ideal de Migracao</h2>
+
+  <div class="phase phase1">
+    <h3>FASE 1: Validacao e Atualizacao de Dados</h3>
+    <p><strong>Objetivo:</strong> Garantir que nosso banco tem dados corretos e completos antes de gerar views.</p>
+    <ul>
+      <li><strong>1.1</strong> Comparar API <code>/persons</code> com <code>person_fisica</code> (CPFs, nomes, enderecos)</li>
+      <li><strong>1.2</strong> Comparar API <code>/contracts</code> com <code>servicos_historico</code> (hash = contrato)</li>
+      <li><strong>1.3</strong> Comparar API <code>/items</code> com itens do <code>servicos_historico</code></li>
+      <li><strong>1.4</strong> Comparar API <code>/discounts</code> com <code>bolsas_descontos</code></li>
+      <li><strong>1.5</strong> Puxar dados de <strong>2026</strong> que podem nao estar no banco (matriculas, contratos novos)</li>
+    </ul>
+    <p style="margin-top:12px"><strong>Quem faz:</strong> Script automatizado (Python/SQL) + validacao manual</p>
+  </div>
+
+  <div class="phase phase2">
+    <h3>FASE 2: Completar Views Financeiras</h3>
+    <p><strong>Objetivo:</strong> Reescrever/criar as views pendentes com dados validados.</p>
+    <ul>
+      <li><strong>2.1</strong> Reimportar <strong>SHABILITACAOFILIAL</strong> no TOTVS (adicionar turnos Manha/Tarde EI UN2)</li>
+      <li><strong>2.2</strong> Reimportar <strong>SHABMODELOPGTO</strong> (depende de 2.1)</li>
+      <li><strong>2.3</strong> Reescrever <strong>SCONTRATO</strong> &mdash; 1 contrato por aluno/periodo, ligado ao plano correto</li>
+      <li><strong>2.4</strong> Criar <strong>SPARCELA</strong> &mdash; parcelas reais com valores, datas, servico, responsavel financeiro</li>
+      <li><strong>2.5</strong> Validar/criar <strong>SBOLSAALUNO</strong> &mdash; bolsas aplicadas por aluno</li>
+      <li><strong>2.6</strong> Criar <strong>SLAN</strong> e <strong>FDADOSPGTO</strong> se necessario</li>
+    </ul>
+    <p style="margin-top:12px"><strong>Quem faz:</strong> Guilherme + assistente de IA (SQL views)</p>
+  </div>
+
+  <div class="phase phase3">
+    <h3>FASE 3: Importacao e Validacao Final</h3>
+    <p><strong>Objetivo:</strong> Carregar no TOTVS e confirmar que tudo bateu.</p>
+    <ul>
+      <li><strong>3.1</strong> Importar views financeiras no TOTVS na ordem correta</li>
+      <li><strong>3.2</strong> Validar totais: alunos por ano, contratos, valores</li>
+      <li><strong>3.3</strong> Cross-check API Gennera vs TOTVS Oracle (amostragem)</li>
+      <li><strong>3.4</strong> Documentar divergencias para ajuste manual</li>
+    </ul>
+    <p style="margin-top:12px"><strong>Quem faz:</strong> Guilherme + consultor TOTVS</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- O QUE A API RESOLVE -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>7. O Que a API Resolve Que o Banco Nao Resolve</h2>
+  <table>
+    <tr><th style="width:25%">Problema</th><th>Sem API</th><th>Com API</th></tr>
+    <tr>
+      <td><strong>Dados de 2026</strong></td>
+      <td>So temos rematriculas no banco. Faltam contratos e matriculas completas.</td>
+      <td>API retorna matriculas, contratos e faturas de 2026 em tempo real.</td>
+    </tr>
+    <tr>
+      <td><strong>Contrato detalhado</strong></td>
+      <td>servicos_historico so tem linhas de cobranca. Precisamos derivar contrato.</td>
+      <td><code>/contracts/:id/detailed</code> retorna compras (purchases), pessoa, dia de vencimento.</td>
+    </tr>
+    <tr>
+      <td><strong>Faturas reais (SPARCELA)</strong></td>
+      <td>Precisamos calcular parcelas a partir de valores brutos do historico.</td>
+      <td><code>/contracts/:id/invoices</code> retorna cada fatura com valor, status (pago/pendente), data.</td>
+    </tr>
+    <tr>
+      <td><strong>Bolsas por aluno</strong></td>
+      <td>So temos catalogo de bolsas (bolsas_descontos). Nao sabemos quem recebe qual.</td>
+      <td>Contrato detalhado mostra descontos aplicados em cada compra do aluno.</td>
+    </tr>
+    <tr>
+      <td><strong>Responsavel financeiro</strong></td>
+      <td>servicos_historico tem CPF do responsavel mas nao o CODCFO.</td>
+      <td>API retorna idPerson do responsavel financeiro direto no contrato.</td>
+    </tr>
+    <tr>
+      <td><strong>IDs inconsistentes</strong></td>
+      <td>enrollment.id_person e servicos_historico.id_pessoa sao namespaces diferentes.</td>
+      <td>API usa o MESMO namespace que servicos_historico. Podemos criar tabela de mapeamento.</td>
+    </tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- GLOSSARIO -->
+<!-- ============================================================ -->
+<div class="card">
+  <h2>8. Glossario</h2>
+  <table>
+    <tr><th style="width:25%">Termo</th><th>Significado</th></tr>
+    <tr><td><strong>MENS / MENSALIDADE</strong></td><td>Mensalidade escolar. 12 parcelas por ano. Unica dedutivel no Imposto de Renda.</td></tr>
+    <tr><td><strong>ALIM / ALIMENTACAO</strong></td><td>Servico de alimentacao. 12 parcelas por ano. Vai no mesmo boleto da mensalidade.</td></tr>
+    <tr><td><strong>MAT / MDIDAT</strong></td><td>Material didatico. 12 parcelas por ano. Vai no mesmo boleto.</td></tr>
+    <tr><td><strong>1oPARC / 1oMENS</strong></td><td>Rematricula. Primeira parcela do ciclo (paga antes do ano comecar).</td></tr>
+    <tr><td><strong>ANUID / ANUIDADE</strong></td><td>Mensalidade paga de uma vez (valor anual em parcela unica). Alternativa ao mensal.</td></tr>
+    <tr><td><strong>RA</strong></td><td>Registro Academico. Numero unico do aluno no sistema. Formato: YYYYNNNNNN</td></tr>
+    <tr><td><strong>CODPLANOPGTO</strong></td><td>Codigo do plano de pagamento no TOTVS. Formato: AA+Filial+Sequencial (ex: 251001)</td></tr>
+    <tr><td><strong>CODCONTRATO</strong></td><td>Codigo do contrato no TOTVS. 1 por aluno por periodo letivo.</td></tr>
+    <tr><td><strong>hash (API)</strong></td><td>ID unico do contrato no Gennera = campo "contrato" no servicos_historico. 20 digitos.</td></tr>
+    <tr><td><strong>Coligada</strong></td><td>Sempre 1 (EDF tem apenas 1 coligada).</td></tr>
+    <tr><td><strong>Filial</strong></td><td>1 = UN1 (Unidade 1) | 2 = UN2 (Unidade 2)</td></tr>
+    <tr><td><strong>gennera_stg</strong></td><td>Schema do PostgreSQL com dados brutos importados do Gennera.</td></tr>
+    <tr><td><strong>export</strong></td><td>Schema do PostgreSQL com views formatadas para o TOTVS.</td></tr>
+  </table>
+</div>
+
+<!-- ============================================================ -->
+<!-- FOOTER -->
+<!-- ============================================================ -->
+<div style="text-align:center; padding: 20px; color: var(--gray); font-size: 13px;">
+  <p>Documento gerado em 16/04/2026 &mdash; Escola do Futuro &mdash; Projeto de Migracao Gennera &rarr; TOTVS RM</p>
+  <p>Versao 1.0</p>
+</div>
+
+</div>
+</body>
+</html>
