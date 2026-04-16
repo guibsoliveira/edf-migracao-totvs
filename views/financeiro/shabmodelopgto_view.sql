@@ -107,7 +107,7 @@ plan_parsed AS (
 
 -- ─── 2. Turnos disponíveis ──────────────────────────────────────────
 turnos(turno) AS (
-    VALUES ('Integral'), ('Manhã'), ('Tarde')
+    VALUES ('Integral'), ('Manha'), ('Tarde')
 ),
 
 -- ─── 3. Expansão: cada plano × habilitações × turno(s) ─────────────
@@ -129,8 +129,19 @@ expanded AS (
                  AND h."CODHABILITACAO"::integer <= pp.hab_end))
     JOIN turnos t ON
         (pp.turno_tipo = 'INTEGRAL' AND t.turno = 'Integral')
-        OR (pp.turno_tipo = 'MEIO' AND t.turno IN ('Manhã', 'Tarde'))
+        OR (pp.turno_tipo = 'MEIO' AND t.turno IN ('Manha', 'Tarde'))
     WHERE pp.codcurso IS NOT NULL
+      -- Regra de negócio EDF (aplica a TODOS os anos):
+      --   UN1 (Filial 1): EF1 3º-5º + EF2 6º-9º + EM 1ª-3ª
+      --                   (SEM EI, SEM EF1 1º-2º)
+      --   UN2 (Filial 2): EI (1-4) + EF1 1º-2º
+      --                   (SEM EF2/EM, SEM EF1 3º-5º)
+      AND NOT (pp."CODFILIAL" = 1 AND pp.codcurso = 'EI')
+      AND NOT (pp."CODFILIAL" = 1 AND pp.codcurso = 'EF1'
+               AND h."CODHABILITACAO"::integer < 3)
+      AND NOT (pp."CODFILIAL" = 2 AND pp.codcurso IN ('EF2', 'EM'))
+      AND NOT (pp."CODFILIAL" = 2 AND pp.codcurso = 'EF1'
+               AND h."CODHABILITACAO"::integer > 2)
 )
 
 -- ─── SELECT FINAL ───────────────────────────────────────────────────

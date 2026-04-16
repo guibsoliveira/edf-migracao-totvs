@@ -63,7 +63,10 @@ DROP VIEW IF EXISTS export.splanopgto CASCADE;
 
 CREATE OR REPLACE VIEW export.splanopgto AS
 WITH base_itens AS (
-    -- 1. Filtra itens recorrentes e descarta poluição cruzada de ano
+    -- 1. Filtra itens recorrentes com uso real e descarta poluição cruzada de ano.
+    --    Threshold de uso: >= 5 alunos distintos E >= 10 cobranças com status efetivo
+    --    (pago/atrasado/renegociado). Elimina resíduos: correções manuais, itens
+    --    criados e abandonados, fragmentos de migração entre anos.
     SELECT
         sh.calendario_academico AS ano,
         sh.item
@@ -76,6 +79,19 @@ WITH base_itens AS (
       AND sh.item ~* '(MENS|MENSALIDADE|ALIMENTA|MATERIAIS|MAT\s+DIDAT|MDIDAT|MDIAT|MD\s+20[0-9]{2}|ANUID|1\S{0,3}\s*PARC)'
       -- descarta itens de outro ano bleeding into este calendario
       AND NOT (sh.item ~ '^20[0-9]{2}\s' AND SUBSTRING(sh.item FROM '^(20[0-9]{2})') <> sh.calendario_academico)
+      -- Exige uso real: item precisa ter vínculo com alunos efetivamente cobrados
+      AND (sh.calendario_academico, sh.item) IN (
+          SELECT x.calendario_academico, x.item
+          FROM gennera_stg.servicos_historico x
+          WHERE x.calendario_academico >= '2021'
+            AND x.item IS NOT NULL AND TRIM(x.item) <> ''
+            AND x.id_pessoa IS NOT NULL AND TRIM(x.id_pessoa) <> ''
+          GROUP BY x.calendario_academico, x.item
+          HAVING COUNT(DISTINCT x.id_pessoa) >= 5
+             AND COUNT(*) FILTER (
+                 WHERE x.status IN ('pago','pago a maior','atrasado','renegociado')
+             ) >= 10
+      )
 ),
 pass1 AS (
     -- 2. Remove prefixo de ano
@@ -151,23 +167,31 @@ segmentos_filtrados AS (
       AND segmento NOT ILIKE '%HORAS%'
 ),
 segmentos_deduplicados AS (
-    -- 8. Deduplica por forma canônica ignorando espaços, acentos e
-    --    caracteres não-ASCII (artefatos de encoding). Preserva a
-    --    grafia mais "limpa" como representativa (menor comprimento
-    --    e alfabeticamente primeira).
+    -- 8. Deduplica por forma canônica ignorando espaços, acentos,
+    --    caracteres não-ASCII e palavras irrelevantes (ANO/ANOS).
+    --    Ex.: "EF1 1° E 2°" e "EF1 1° E 2° ANO" colapsam no mesmo plano.
+    --    Preserva a grafia mais "limpa" (menor + alfabeticamente primeira).
     SELECT
         ano,
         (SELECT sf.segmento
          FROM segmentos_filtrados sf
          WHERE sf.ano = x.ano
-           AND UPPER(regexp_replace(regexp_replace(sf.segmento, '[^A-Za-z0-9/]', '', 'g'), '\s+', '', 'g'))
+           AND UPPER(regexp_replace(
+                 regexp_replace(
+                   regexp_replace(sf.segmento, '(^|\s)ANOS?(\s|$)', ' ', 'ig'),
+                   '[^A-Za-z0-9/]', '', 'g'),
+                 '\s+', '', 'g'))
              = x.chave_norm
          ORDER BY LENGTH(sf.segmento), sf.segmento
          LIMIT 1) AS segmento
     FROM (
         SELECT DISTINCT
             ano,
-            UPPER(regexp_replace(regexp_replace(segmento, '[^A-Za-z0-9/]', '', 'g'), '\s+', '', 'g')) AS chave_norm
+            UPPER(regexp_replace(
+                regexp_replace(
+                    regexp_replace(segmento, '(^|\s)ANOS?(\s|$)', ' ', 'ig'),
+                    '[^A-Za-z0-9/]', '', 'g'),
+                '\s+', '', 'g')) AS chave_norm
         FROM segmentos_filtrados
         WHERE LENGTH(regexp_replace(segmento, '[^A-Za-z0-9/]', '', 'g')) >= 2
     ) x
@@ -175,26 +199,69 @@ segmentos_deduplicados AS (
 filiais AS (
     SELECT 1 AS codfilial UNION ALL SELECT 2
 ),
-base AS (
+-- ─── Classificação semântica do segmento ─────────────────────────────
+-- Regra de negócio EDF:
+--   UN1 (Filial 1): EF1 3º-5º + EF2 6º-9º + EM 1ª-3ª  (SEM EI, SEM EF1 1-2)
+--   UN2 (Filial 2): EI (N2/N3/K1/K2) + EF1 1º-2º      (SEM EF2/EM, SEM EF1 3-5)
+seg_class AS (
     SELECT
         sd.ano,
         sd.segmento,
+        CASE
+            -- Identificação de curso (ordem importa: mais específico primeiro)
+            WHEN sd.segmento ~* '(M.DIO|(^|\s)EM(\s|$|-)|1\S{0,3}\s*EM|3\S{0,3}\s*EM)'
+                THEN 'EM'
+            WHEN sd.segmento ~* '(FUND(AMENTAL)?\s*(II|2)|(^|\s)(F2|EF2)(\s|$)|6\S{0,3}\s*(a|ao|/)\s*9)'
+                THEN 'EF2'
+            -- EF1 com range 3-5 explícito
+            WHEN sd.segmento ~* '(3\S{0,3}\s*(a|ao|/)\s*5|1\S{0,3}\s*(a|ao)\s*5)'
+                THEN 'EF1_35'
+            -- EF1 com range 1-2 explícito
+            WHEN sd.segmento ~* '(1\S{0,3}\s*ANO|2\S{0,3}\s*ANO|1\S{0,3}\s*(e|E)\s*2)'
+                 AND sd.segmento ~* '(FUND|F1|EF1)'
+                THEN 'EF1_12'
+            -- EF1 genérico (sem range explícito) → válido nas duas filiais
+            WHEN sd.segmento ~* '(FUND(AMENTAL)?\s*(I\s|1|$)|(^|\s)(F1|EF1)(\s|$))'
+                THEN 'EF1'
+            -- EI explícito ou rótulos de turno (INTEGRAL/MEIO/INT/1/2) = EI
+            WHEN sd.segmento ~* 'INFANTIL|(^|\s)EI(\s|$)'
+                THEN 'EI'
+            WHEN sd.segmento ~* '(^|\s)(INTEGRAL|INT|1/2|MEIO\s*PER)(\s|$)'
+                 AND sd.segmento !~* '(FUND|F1|F2|EF|EM|M.DIO)'
+                THEN 'EI'
+            ELSE 'OUTRO'
+        END AS classe
+    FROM segmentos_deduplicados sd
+),
+base AS (
+    -- UN1 aceita: EM, EF2, EF1_35, EF1 (genérico), OUTRO
+    -- UN2 aceita: EI, EF1_12, EF1 (genérico), OUTRO
+    SELECT
+        sc.ano,
+        sc.segmento,
         f.codfilial,
         ROW_NUMBER() OVER (
-            PARTITION BY sd.ano, f.codfilial
-            ORDER BY sd.segmento
+            PARTITION BY sc.ano, f.codfilial
+            ORDER BY sc.segmento
         ) AS seq
-    FROM segmentos_deduplicados sd
-    CROSS JOIN filiais f
+    FROM seg_class sc
+    JOIN filiais f
+      ON (f.codfilial = 1 AND sc.classe IN ('EM','EF2','EF1_35','EF1','OUTRO'))
+      OR (f.codfilial = 2 AND sc.classe IN ('EI','EF1_12','EF1','OUTRO'))
 )
 SELECT
     1                                                               AS "CODCOLIGADA",
     ano::character varying(10)                                      AS "IDPERLET",
     (RIGHT(ano, 2) || codfilial::text || LPAD(seq::text, 3, '0'))::character varying(10)
                                                                     AS "CODPLANOPGTO",
-    LEFT('Plano ' || segmento || ' ' || ano || ' - Filial ' || codfilial::text, 60)::character varying(60)
-                                                                    AS "DESCRICAO",
-    LEFT(segmento || ' ' || ano, 60)::character varying(60)         AS "NOME",
+    LEFT(translate('Plano ' || segmento || ' ' || ano || ' - Filial ' || codfilial::text,
+                   'ÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇáàâãäéèêëíìîïóòôõöúùûüçº°ª',
+                   'AAAAAEEEEIIIIOOOOOUUUUCaaaaaeeeeiiiiooooouuuucooa'),
+         60)::character varying(60)                                  AS "DESCRICAO",
+    LEFT(translate(segmento || ' ' || ano,
+                   'ÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇáàâãäéèêëíìîïóòôõöúùûüçº°ª',
+                   'AAAAAEEEEIIIIOOOOOUUUUCaaaaaeeeeiiiiooooouuuucooa'),
+         60)::character varying(60)                                  AS "NOME",
     (ano || '-01-01')::date                                         AS "DTINICIO",
     (ano || '-12-31')::date                                         AS "DTFIM",
     0::numeric(10,4)                                                AS "DESCONTO",
