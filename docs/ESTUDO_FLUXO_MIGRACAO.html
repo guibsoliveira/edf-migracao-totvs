@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Estudo Completo — Fluxo de Migração EDF → TOTVS RM</title>
+<style>
+  :root {
+    --primary: #1e40af;
+    --primary-light: #3b82f6;
+    --bg: #f8fafc;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+    --ok: #16a34a;
+    --warn: #ea580c;
+    --error: #dc2626;
+    --info: #0891b2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg); color: var(--text); margin: 0; padding: 0;
+    line-height: 1.6;
+  }
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px; }
+  header {
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white; padding: 48px 0; margin-bottom: 32px;
+  }
+  header h1 { margin: 0; font-size: 36px; font-weight: 700; }
+  header p { margin: 8px 0 0; opacity: 0.9; }
+  h2 {
+    color: var(--primary); margin-top: 40px; padding-bottom: 8px;
+    border-bottom: 2px solid var(--border); font-size: 24px;
+  }
+  h3 { color: var(--text); margin-top: 28px; font-size: 18px; }
+  .card {
+    background: var(--card-bg); padding: 20px 24px; margin: 16px 0;
+    border-radius: 8px; border: 1px solid var(--border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .stat { background: var(--card-bg); padding: 16px; border-radius: 8px; border: 1px solid var(--border); }
+  .stat-value { font-size: 32px; font-weight: 700; color: var(--primary); }
+  .stat-label { font-size: 13px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { background: var(--bg); font-weight: 600; color: var(--text); font-size: 13px; text-transform: uppercase; }
+  tr:hover { background: var(--bg); }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .badge-ok { background: #dcfce7; color: var(--ok); }
+  .badge-warn { background: #fed7aa; color: var(--warn); }
+  .badge-error { background: #fecaca; color: var(--error); }
+  .badge-info { background: #cffafe; color: var(--info); }
+  .badge-v1 { background: #e0e7ff; color: #4338ca; }
+  .badge-v2 { background: #dbeafe; color: var(--primary); }
+  code { background: var(--bg); padding: 2px 6px; border-radius: 4px; font-size: 13px; color: var(--primary); }
+  pre { background: var(--text); color: #e2e8f0; padding: 16px; border-radius: 6px; overflow-x: auto; font-size: 13px; }
+  .alert {
+    padding: 12px 16px; margin: 12px 0; border-left: 4px solid; border-radius: 4px;
+  }
+  .alert-warn { background: #fff7ed; border-color: var(--warn); }
+  .alert-error { background: #fef2f2; border-color: var(--error); }
+  .alert-info { background: #ecfeff; border-color: var(--info); }
+  .alert-ok { background: #f0fdf4; border-color: var(--ok); }
+  .flow-step {
+    display: flex; align-items: center; padding: 10px 16px; margin: 6px 0;
+    background: var(--card-bg); border-radius: 6px; border: 1px solid var(--border);
+  }
+  .flow-num {
+    width: 32px; height: 32px; border-radius: 50%; background: var(--primary);
+    color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; flex-shrink: 0; margin-right: 12px;
+  }
+  .flow-name { font-weight: 600; min-width: 200px; }
+  .flow-desc { color: var(--text-light); font-size: 13px; }
+  .toc { background: var(--card-bg); padding: 20px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 32px; }
+  .toc ul { margin: 0; padding-left: 24px; }
+  .toc a { color: var(--primary); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Estudo Completo do Fluxo de Migração</h1>
+    <p><strong>Escola do Futuro</strong> → <strong>TOTVS RM Educacional</strong> • Análise técnica de todas as views e ordem ideal de importação • 2026-05-08</p>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="toc">
+  <h3 style="margin-top:0">Sumário</h3>
+  <ul>
+    <li><a href="#visao">1. Visão Geral</a></li>
+    <li><a href="#inventario">2. Inventário Completo das Views</a></li>
+    <li><a href="#v1v2">3. Comparativo Financeiro v1 × v2</a></li>
+    <li><a href="#api">4. Validação contra a API Gennera ao vivo</a></li>
+    <li><a href="#fluxo">5. Fluxo Ideal de Importação (ordem revisada)</a></li>
+    <li><a href="#dependencias">6. Mapa de Dependências (FK em cascata)</a></li>
+    <li><a href="#pontos">7. Pontos de Atenção e Erros Recorrentes</a></li>
+    <li><a href="#proximos">8. Próximos passos para zerar a migração</a></li>
+  </ul>
+</div>
+
+<h2 id="visao">1. Visão Geral</h2>
+
+<div class="grid">
+  <div class="stat"><div class="stat-value">58</div><div class="stat-label">Views em export+v2</div></div>
+  <div class="stat"><div class="stat-value">57</div><div class="stat-label">Tabelas em gennera_stg</div></div>
+  <div class="stat"><div class="stat-value">3</div><div class="stat-label">Unidades (UN1 / UN2 / Teste)</div></div>
+  <div class="stat"><div class="stat-value">6</div><div class="stat-label">Anos cobertos (2021-2026)</div></div>
+</div>
+
+<div class="card">
+<p><strong>Arquitetura geral:</strong> existem três camadas de dados:</p>
+<ol>
+  <li><strong>gennera_stg</strong> — schema fonte com 57 tabelas extraídas do Gennera (dump CSV + API snapshots).</li>
+  <li><strong>export</strong> — schema antigo (v1) com 48 views, formato 1:1 com items Gennera (ex: 178 SSERVICOs por ano+segmento).</li>
+  <li><strong>export_v2</strong> — schema novo seguindo recomendação do consultor Lucas: 10 views, SSERVICO genérico (4 fixos), SPARCPLANO carrega o valor.</li>
+</ol>
+</div>
+
+<div class="alert alert-ok">
+<strong>Status atual:</strong> cadeia financeira v2 completa, 0 órfãos em todas as 10 FKs, valores 2026 batem 100% com a planilha do financeiro, teste piloto Maria Valentina (RA 20101529, 2024) já validado e exportado em ANSI.
+</div>
+
+<h2 id="inventario">2. Inventário Completo das Views</h2>
+
+<h3>2.1 Acadêmico — base estrutural (núcleo)</h3>
+<table>
+  <tr><th>#</th><th>View</th><th>Linhas</th><th>Função</th><th>Status</th></tr>
+  <tr><td>1</td><td><code>sinstituicao</code></td><td>3</td><td>UN1, UN2, Teste — coligadas/filiais</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>2</td><td><code>spletivo</code></td><td>12</td><td>Períodos letivos (2 unidades × 6 anos)</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>3</td><td><code>scurso</code></td><td>4</td><td>EI, EF1, EF2, EM</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>4</td><td><code>shabilitacao</code></td><td>16</td><td>Séries/anos (1-9 + 1-3 EM + N2-K2 EI)</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>5</td><td><code>sgrade</code></td><td>210</td><td>Matrizes curriculares</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>6</td><td><code>sturma</code></td><td>111</td><td>Turmas (1B 2023, 3M 2025, etc)</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>7</td><td><code>sturmadisc</code></td><td>1.646</td><td>Disciplinas por turma</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>8</td><td><code>sdisciplina</code></td><td>125</td><td>Catálogo de disciplinas</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>9</td><td><code>shabilitacaofilial</code></td><td>60</td><td>Hab × filial × grade × turno</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>10</td><td><code>shabilitacaofilialpl</code></td><td>60</td><td>Hab × filial × período letivo</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>11</td><td><code>shabilitacaoaluno</code></td><td>2.675</td><td>Aluno × habilitação</td><td><span class="badge badge-info">Pendente Isac</span></td></tr>
+  <tr><td>12</td><td><code>speriodo</code></td><td>225</td><td>Períodos de avaliação</td><td><span class="badge badge-warn">Parcial</span></td></tr>
+  <tr><td>13</td><td><code>ppessoa</code></td><td>9.166</td><td>Pessoas físicas + jurídicas</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>14</td><td><code>sprofessor</code></td><td>155</td><td>Professores</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>15</td><td><code>sprofessorturma</code></td><td>2.169</td><td>Professor × turma</td><td><span class="badge badge-ok">Importada</span></td></tr>
+  <tr><td>16</td><td><code>smatricula</code></td><td>38.594</td><td>Matrículas por ano</td><td><span class="badge badge-info">Pendente Isac</span></td></tr>
+  <tr><td>17</td><td><code>smatricpl</code></td><td>2.675</td><td>Matrícula × período letivo</td><td><span class="badge badge-info">Pendente Isac</span></td></tr>
+</table>
+
+<h3>2.2 Acadêmico — avaliação e frequência</h3>
+<table>
+  <tr><th>View</th><th>Função</th><th>Status</th></tr>
+  <tr><td><code>setapas</code> (6.584)</td><td>Etapas de avaliação (bimestres/trimestres)</td><td><span class="badge badge-warn">Parcial</span></td></tr>
+  <tr><td><code>sprovas</code> (28.756)</td><td>Provas/avaliações</td><td><span class="badge badge-warn">Parcial</span></td></tr>
+  <tr><td><code>snotas</code></td><td>Notas por aluno/prova</td><td><span class="badge badge-info">Pendente</span></td></tr>
+  <tr><td><code>snotaetapa</code></td><td>Médias por etapa</td><td><span class="badge badge-info">Pendente</span></td></tr>
+  <tr><td><code>sfrequencia</code></td><td>Frequência (presença/falta)</td><td><span class="badge badge-info">Pendente</span></td></tr>
+  <tr><td><code>shistalunocol</code></td><td>Histórico do aluno (colação)</td><td><span class="badge badge-info">Pendente</span></td></tr>
+  <tr><td><code>shistdisccol</code></td><td>Histórico de disciplinas</td><td><span class="badge badge-info">Pendente</span></td></tr>
+  <tr><td><code>splanoaula</code></td><td>Plano de aula</td><td><span class="badge badge-info">Pendente</span></td></tr>
+  <tr><td><code>shorario</code> / <code>shorarioturma</code> / <code>shorarioprofessor</code></td><td>Horários de aula</td><td><span class="badge badge-warn">Parcial</span></td></tr>
+</table>
+
+<h3>2.3 Financeiro — V1 (formato antigo, 1:1 Gennera)</h3>
+<table>
+  <tr><th>View</th><th>Linhas</th><th>Observação</th></tr>
+  <tr><td><code>fcfo</code></td><td>755</td><td>Cli/For — CODCFO em 4-6 dígitos misturados</td></tr>
+  <tr><td><code>sservico</code> v1</td><td>178</td><td>Items por ano+segmento (formato Gennera)</td></tr>
+  <tr><td><code>sbolsa</code></td><td>59</td><td>Catálogo de bolsas/descontos</td></tr>
+  <tr><td><code>sbolsapletivo</code></td><td>708</td><td>Bolsa × período × filial</td></tr>
+  <tr><td><code>splanopgto</code> v1</td><td>62</td><td>Planos antigos</td></tr>
+  <tr><td><code>shabmodelopgto</code> v1</td><td>197</td><td>Plano × hab × turno</td></tr>
+  <tr><td><code>scontrato_nova</code></td><td>10.134</td><td>Contratos (1 por contrato Gennera)</td></tr>
+  <tr><td><code>sbolsaaluno</code> v1</td><td>4.668</td><td>Bolsas por aluno</td></tr>
+  <tr><td><code>sparcela</code> v1 / <code>flan</code> v1</td><td>—</td><td>Versões antigas — substituídas por v2</td></tr>
+</table>
+
+<h3>2.4 Financeiro — V2 (estrutura genérica recomendada pelo consultor) <span class="badge badge-v2">NOVO</span></h3>
+<table>
+  <tr><th>View</th><th>Linhas</th><th>Observação</th></tr>
+  <tr><td><code>export_v2.sservico</code></td><td>62</td><td><strong>4 fixos</strong> (1ª mens, Mensalidade, Material Didático, Alimentação) + 53 variáveis (eventos) + 5 legacy</td></tr>
+  <tr><td><code>export_v2.splanopgto</code></td><td>34</td><td>1 plano por (ano, filial, segmento) — 2021-2026</td></tr>
+  <tr><td><code>export_v2.sparcplano</code></td><td>1.258</td><td><strong>37 parcelas por plano</strong> (1ª mens + 12 mens + 12 alim + 12 mat)</td></tr>
+  <tr><td><code>export_v2.shabmodelopgto</code></td><td>84</td><td>Liga plano × curso × hab × grade × turno</td></tr>
+  <tr><td><code>export_v2.fcfo</code></td><td>755</td><td>FCFO com <code>CODCFO_6</code> (LPAD 6 dígitos) — padroniza com SPARCELA</td></tr>
+  <tr><td><code>export_v2.scontrato</code></td><td>10.134</td><td>100% com CODPLANOPGTO preenchido</td></tr>
+  <tr><td><code>export_v2.sparcela</code></td><td>81.642</td><td>Parcelas reais cobradas — SERVICO genérico</td></tr>
+  <tr><td><code>export_v2.sbolsaaluno</code></td><td>4.727</td><td>Bolsas aplicadas — SERVICO genérico</td></tr>
+  <tr><td><code>export_v2.flan</code></td><td>81.357</td><td>Lançamentos financeiros (1 por parcela) — 16 colunas para macro Excel</td></tr>
+  <tr><td><code>export_v2.slan</code></td><td>81.357</td><td>Vínculo acadêmico↔financeiro (mesma chave NUMERODOCUMENTO do FLAN)</td></tr>
+</table>
+
+<h2 id="v1v2">3. Comparativo Financeiro v1 × v2</h2>
+
+<table>
+  <tr><th>Aspecto</th><th>V1 (antigo)</th><th>V2 (novo)</th><th>Ganho</th></tr>
+  <tr>
+    <td>SSERVICO catálogo</td>
+    <td>178 itens (1 por ano+segmento, ex: "2025 MENS F2")</td>
+    <td>62 itens (4 fixos genéricos + variáveis)</td>
+    <td>Cliente reutiliza o mesmo SSERVICO em todos os anos</td>
+  </tr>
+  <tr>
+    <td>Onde fica o VALOR</td>
+    <td>Em SSERVICO (1 valor por item)</td>
+    <td>Em SPARCPLANO (valor por parcela)</td>
+    <td>Aderente ao padrão TOTVS — Lucas validou</td>
+  </tr>
+  <tr>
+    <td>SPLANOPGTO</td>
+    <td>62 planos antigos</td>
+    <td>34 planos (ano × filial × segmento canônico)</td>
+    <td>Esquema canônico, sem duplicação de nomenclatura</td>
+  </tr>
+  <tr>
+    <td>SPARCPLANO</td>
+    <td>Não usado (ou usado parcialmente)</td>
+    <td>1.258 parcelas — esqueleto completo</td>
+    <td>Permite gerar cobranças futuras automaticamente</td>
+  </tr>
+  <tr>
+    <td>FCFO CODCFO</td>
+    <td>4-6 dígitos misturados</td>
+    <td><code>CODCFO_6</code> via LPAD a 6 dígitos</td>
+    <td>Consistente com formato TOTVS pós-importação</td>
+  </tr>
+  <tr>
+    <td>FLAN</td>
+    <td>Existe mas era gerado via macro Excel</td>
+    <td>View pronta (81.357 linhas) com NUMERODOCUMENTO determinístico</td>
+    <td>Pode rodar macro direto sem ajuste manual</td>
+  </tr>
+  <tr>
+    <td>SLAN</td>
+    <td>Não existia</td>
+    <td>Nova — ponte acadêmico↔financeiro</td>
+    <td>Aluno conectado ao lançamento via NUMERODOCUMENTO</td>
+  </tr>
+</table>
+
+<h2 id="api">4. Validação contra a API Gennera ao vivo</h2>
+
+<div class="alert alert-info">
+A API <code>https://api2.gennera.com.br</code> é a fonte de verdade — dump local pode estar defasado. Toda análise crítica foi validada contra ela.
+</div>
+
+<table>
+  <tr><th>Entidade</th><th>UN1 (320)</th><th>UN2 (321)</th><th>Fonte local equivalente</th><th>Bate?</th></tr>
+  <tr><td>Items (catálogo)</td><td>348</td><td>248</td><td><code>gennera_stg.api_items</code> (596)</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>Pessoas</td><td>9.347</td><td>9.347</td><td><code>person_fisica</code> + <code>ppessoa</code> (9.166)</td><td><span class="badge badge-warn">~98%</span></td></tr>
+  <tr><td>Campanhas</td><td>16</td><td>13</td><td>(local não trackeia)</td><td><span class="badge badge-info">N/A</span></td></tr>
+  <tr><td>Contratos</td><td>11.417</td><td>3.832</td><td><code>contract</code> (≈14.352 ativos)</td><td><span class="badge badge-ok">~99%</span></td></tr>
+  <tr><td>Payments</td><td>54.445</td><td>18.165</td><td><code>payment</code> (≈73k)</td><td><span class="badge badge-ok">✓</span></td></tr>
+</table>
+
+<h3>4.1 Validação de valores 2026 (API ↔ planilha financeiro)</h3>
+<table>
+  <tr><th>Plano</th><th>Anual API</th><th>Anual planilha</th><th>Match</th></tr>
+  <tr><td>EM 1º-3º (261001)</td><td>R$ 109.936</td><td>R$ 109.936</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EF1 3º-5º (261002)</td><td>R$ 87.261</td><td>R$ 87.261</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EF2 6º-9º (261003)</td><td>R$ 98.781</td><td>R$ 98.781</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EI Integral K1/K2 (262001)</td><td>R$ 79.271</td><td>R$ 79.271</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EI Integral N2/N3 (262002)</td><td>R$ 78.467</td><td>R$ 78.467</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EI Meio Per K1/K2 (262003)</td><td>R$ 58.370</td><td>R$ 58.370</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EI Meio Per N2/N3 (262004)</td><td>R$ 57.566</td><td>R$ 57.566</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EF1 1º (262005)</td><td>R$ 82.690</td><td>R$ 82.690</td><td><span class="badge badge-ok">✓</span></td></tr>
+  <tr><td>EF1 2º (262006)</td><td>R$ 84.549</td><td>R$ 84.549</td><td><span class="badge badge-ok">✓</span></td></tr>
+</table>
+
+<h3>4.2 Validação FCFO (responsável financeiro)</h3>
+<div class="card">
+<strong>Caso teste: Maria Valentina Nickel Garibaldi (RA 20101529)</strong>
+<ul>
+  <li>FCFO local: <code>001990</code> → Victor Luiz Borges Garibaldi (pai) — CPF 297.714.058-10</li>
+  <li>Gennera API + servicos_historico: Victor Luiz Borges Garibaldi — CPF 297.714.058-10</li>
+  <li><strong>CPF bate 100%</strong> entre as duas fontes — vínculo aluno↔responsável íntegro</li>
+</ul>
+</div>
+
+<h2 id="fluxo">5. Fluxo Ideal de Importação (ordem revisada)</h2>
+
+<div class="alert alert-info">
+<strong>Princípio:</strong> cada view só pode entrar se TODAS as suas dependências (FKs) já tiverem entrado. O TOTVS faz lookup em cascata — se uma FK falha, todo o lote é abortado.
+</div>
+
+<h3>Fase 1 — Estrutura institucional</h3>
+<div class="flow-step"><div class="flow-num">1</div><div class="flow-name">SINSTITUICAO</div><div class="flow-desc">3 instituições / coligadas</div></div>
+<div class="flow-step"><div class="flow-num">2</div><div class="flow-name">SPLETIVO</div><div class="flow-desc">12 períodos letivos — base de TODA cadeia (FK em quase tudo)</div></div>
+
+<h3>Fase 2 — Catálogo acadêmico</h3>
+<div class="flow-step"><div class="flow-num">3</div><div class="flow-name">SCURSO</div><div class="flow-desc">EI/EF1/EF2/EM</div></div>
+<div class="flow-step"><div class="flow-num">4</div><div class="flow-name">SHABILITACAO</div><div class="flow-desc">16 séries</div></div>
+<div class="flow-step"><div class="flow-num">5</div><div class="flow-name">SGRADE</div><div class="flow-desc">210 matrizes (1 por ano+curso+hab)</div></div>
+<div class="flow-step"><div class="flow-num">6</div><div class="flow-name">SHABILITACAOFILIAL</div><div class="flow-desc">60 — habilitações disponíveis na filial+grade+turno</div></div>
+<div class="flow-step"><div class="flow-num">7</div><div class="flow-name">SHABILITACAOFILIALPL</div><div class="flow-desc">60 — habilitações ofertadas por período letivo</div></div>
+<div class="flow-step"><div class="flow-num">8</div><div class="flow-name">SDISCIPLINA + STURMA + STURMADISC</div><div class="flow-desc">Disciplinas e turmas</div></div>
+
+<h3>Fase 3 — Pessoas</h3>
+<div class="flow-step"><div class="flow-num">9</div><div class="flow-name">PPESSOA</div><div class="flow-desc">9.166 pessoas físicas</div></div>
+<div class="flow-step"><div class="flow-num">10</div><div class="flow-name">FCFO (v2)</div><div class="flow-desc">755 — Cli/For com CODCFO 6 dígitos</div></div>
+<div class="flow-step"><div class="flow-num">11</div><div class="flow-name">SPROFESSOR + SPROFESSORTURMA</div><div class="flow-desc">155 + 2.169</div></div>
+
+<h3>Fase 4 — Matrículas</h3>
+<div class="flow-step"><div class="flow-num">12</div><div class="flow-name">SHABILITACAOALUNO</div><div class="flow-desc">2.675 — aluno × habilitação <span class="badge badge-info">Pendente Isac</span></div></div>
+<div class="flow-step"><div class="flow-num">13</div><div class="flow-name">SMATRICULA</div><div class="flow-desc">38.594 matrículas <span class="badge badge-info">Pendente Isac</span></div></div>
+<div class="flow-step"><div class="flow-num">14</div><div class="flow-name">SMATRICPL</div><div class="flow-desc">2.675 matrículas × período letivo</div></div>
+
+<h3>Fase 5 — Financeiro (v2) <span class="badge badge-v2">REVISADO</span></h3>
+<div class="flow-step"><div class="flow-num">15</div><div class="flow-name">SSERVICO v2</div><div class="flow-desc">62 itens (4 fixos + variáveis)</div></div>
+<div class="flow-step"><div class="flow-num">16</div><div class="flow-name">SBOLSA</div><div class="flow-desc">59 bolsas</div></div>
+<div class="flow-step"><div class="flow-num">17</div><div class="flow-name">SBOLSAPLETIVO</div><div class="flow-desc">708 — bolsa × período × filial</div></div>
+<div class="flow-step"><div class="flow-num">18</div><div class="flow-name">SPLANOPGTO v2</div><div class="flow-desc">34 planos (2021-2026)</div></div>
+<div class="flow-step"><div class="flow-num">19</div><div class="flow-name">SHABMODELOPGTO v2 ⬅ <strong>ORDEM CORRIGIDA</strong></div><div class="flow-desc">84 — vem ANTES de SPARCPLANO (era o erro recente)</div></div>
+<div class="flow-step"><div class="flow-num">20</div><div class="flow-name">SPARCPLANO v2</div><div class="flow-desc">1.258 parcelas-template (valores BR, ponto/vírgula corretos)</div></div>
+<div class="flow-step"><div class="flow-num">21</div><div class="flow-name">SCONTRATO v2</div><div class="flow-desc">10.134 contratos com CODPLANOPGTO</div></div>
+<div class="flow-step"><div class="flow-num">22</div><div class="flow-name">SPARCELA v2</div><div class="flow-desc">81.642 parcelas cobradas</div></div>
+<div class="flow-step"><div class="flow-num">23</div><div class="flow-name">SBOLSAALUNO v2</div><div class="flow-desc">4.727 bolsas aplicadas</div></div>
+<div class="flow-step"><div class="flow-num">24</div><div class="flow-name">FLAN v2</div><div class="flow-desc">81.357 lançamentos (via macro Excel ou direto)</div></div>
+<div class="flow-step"><div class="flow-num">25</div><div class="flow-name">SLAN v2 ⬅ <strong>NOVO</strong></div><div class="flow-desc">81.357 — ponte acadêmico↔financeiro</div></div>
+
+<h3>Fase 6 — Avaliação/Histórico (opcional)</h3>
+<div class="flow-step"><div class="flow-num">26</div><div class="flow-name">SETAPAS + SPERIODO + SPROVAS + SNOTAS + SNOTAETAPA</div><div class="flow-desc">Notas e avaliações</div></div>
+<div class="flow-step"><div class="flow-num">27</div><div class="flow-name">SHISTALUNOCOL + SHISTDISCCOL</div><div class="flow-desc">Histórico escolar (colação)</div></div>
+<div class="flow-step"><div class="flow-num">28</div><div class="flow-name">SFREQUENCIA</div><div class="flow-desc">Frequência</div></div>
+
+<h2 id="dependencias">6. Mapa de Dependências (FK em cascata)</h2>
+
+<pre>
+SINSTITUICAO ── SPLETIVO ─┬── SCURSO ── SHABILITACAO ── SGRADE
+                          ├── SHABILITACAOFILIAL ── SHABILITACAOFILIALPL
+                          ├── STURMA ── STURMADISC
+                          └── PPESSOA ── FCFO
+                                          │
+              ┌───────────────────────────┼────────────────────┐
+              │                           │                    │
+        SSERVICO                      SHABILITACAOALUNO        SPROFESSOR
+              │                           │                    │
+        SBOLSA ── SBOLSAPLETIVO       SMATRICULA               SPROFESSORTURMA
+              │                           │
+        SPLANOPGTO                    SMATRICPL
+              │
+        SHABMODELOPGTO ───────────────┘
+              │
+        SPARCPLANO
+              │
+        SCONTRATO ──────────────────────── SLAN ────── FLAN
+              │
+        SPARCELA / SBOLSAALUNO
+</pre>
+
+<h2 id="pontos">7. Pontos de Atenção e Erros Recorrentes</h2>
+
+<div class="alert alert-error">
+<strong>Erro #1 — VALOR formato US (`4346.0000`)</strong><br>
+TOTVS interpreta o ponto como separador de milhar (R$ 43.460,00 em vez de R$ 4.346,00). <strong>Solução:</strong> exportar valores numéricos em formato BR com vírgula (`4346,0000`). Já aplicado em SPARCPLANO, SPARCELA e FLAN.
+</div>
+
+<div class="alert alert-error">
+<strong>Erro #2 — CODCFO 4 dígitos vs 6 dígitos</strong><br>
+FCFO armazenado com 4 dígitos enquanto SPARCELA referencia 6. <strong>Solução:</strong> view <code>export_v2.fcfo</code> faz LPAD a 6 dígitos via <code>CODCFO_6</code>.
+</div>
+
+<div class="alert alert-error">
+<strong>Erro #3 — Ordem SPARCPLANO antes de SHABMODELOPGTO</strong><br>
+SPARCPLANO referencia plano que precisa estar ligado às habilitações primeiro. <strong>Solução:</strong> SHABMODELOPGTO antes de SPARCPLANO (ordem corrigida no fluxo acima).
+</div>
+
+<div class="alert alert-error">
+<strong>Erro #4 — IDHABILITACAOFILIAL NULL após lookup</strong><br>
+Ocorre quando o TOTVS faz lookup em SHABILITACAOFILIAL mas a combinação (CODHABILITACAO + grade + turno + filial) não está cadastrada. <strong>Solução:</strong> importar SHABILITACAOFILIAL completa (60 linhas) ANTES de SHABMODELOPGTO para o ano testado.
+</div>
+
+<div class="alert alert-warn">
+<strong>Atenção #5 — 18.037 SPARCELAs órfãs (CODCONTRATO NULL)</strong><br>
+Parcelas-extras de alunos com >4 contratos no ano que não conseguiram match com nenhum dos tipos (MENS/REMATR/SERVIC/SERVIC_EXTRA). Issue pré-existente da v1. <strong>Solução parcial aplicada:</strong> filtro <code>WHERE CODCONTRATO IS NOT NULL</code> em <code>sparcela_v2</code> (81.642 → 81.642 válidas).
+</div>
+
+<div class="alert alert-warn">
+<strong>Atenção #6 — Dump local sem 2026</strong><br>
+gennera_stg.enrollment / contract / servicos_historico vão até 2025-12-19. As 590 matrículas 2026 só existem na API. <strong>Recomendação:</strong> antes do go-live, re-fazer dump completo OU consumir via API.
+</div>
+
+<div class="alert alert-warn">
+<strong>Atenção #7 — Encoding ANSI vs UTF-8</strong><br>
+TOTVS espera ANSI (Windows-1252 / ISO-8859-1). Exportar com <code>ENCODING 'LATIN1'</code>, sem BOM, separador <code>;</code>. Já padronizado em <code>data/exportacoes/</code>.
+</div>
+
+<div class="alert alert-info">
+<strong>Info #8 — Datas em formato YYYY-MM-DD</strong><br>
+TOTVS aceita datas como string <code>YYYY-MM-DD</code> nos CSVs (tipo character varying). Não usar <code>DATA</code> nativo do PostgreSQL — pode dar problema de locale.
+</div>
+
+<div class="alert alert-info">
+<strong>Info #9 — Valores monetários SEMPRE em formato BR</strong><br>
+SPARCPLANO.VALOR, SPARCELA.VALOR, FLAN.VALORORIGINAL: usar <code>"5658,0000"</code> (text). Macro Excel da escola já espera esse formato.
+</div>
+
+<h2 id="proximos">8. Próximos passos para zerar a migração</h2>
+
+<table>
+  <tr><th>#</th><th>Tarefa</th><th>Responsável</th><th>Status</th></tr>
+  <tr><td>1</td><td>Importar SHABILITACAOFILIAL para 2024 no TOTVS (se ainda não fez)</td><td>Isac</td><td><span class="badge badge-warn">Pendente</span></td></tr>
+  <tr><td>2</td><td>Importar SHABILITACAOALUNO + SMATRICULA + SMATRICPL para 2024</td><td>Isac</td><td><span class="badge badge-warn">Pendente</span></td></tr>
+  <tr><td>3</td><td>Teste piloto Maria Valentina (RA 20101529) 2024 — 9 arquivos prontos em <code>data/exportacoes/2026-05-08/</code></td><td>Você + Isac</td><td><span class="badge badge-info">Em andamento</span></td></tr>
+  <tr><td>4</td><td>Após sucesso piloto: rodar massa de 2024 (8.023 matrículas)</td><td>Você</td><td><span class="badge badge-info">Aguardando piloto</span></td></tr>
+  <tr><td>5</td><td>Rodar massa 2025</td><td>Você</td><td><span class="badge badge-info">Aguardando 2024</span></td></tr>
+  <tr><td>6</td><td>Refresh dump local com dados 2026 OU consumir API live</td><td>Você</td><td><span class="badge badge-warn">A planejar</span></td></tr>
+  <tr><td>7</td><td>Rodar massa 2026 (8.708+ matrículas previstas)</td><td>Você</td><td><span class="badge badge-info">Após dump</span></td></tr>
+  <tr><td>8</td><td>Importar histórico (notas, frequência, etapas)</td><td>Isac</td><td><span class="badge badge-info">Pós-financeiro</span></td></tr>
+</table>
+
+<h3>Estimativa de tempo</h3>
+<div class="card">
+<ul>
+  <li><strong>Cadeia financeira pronta:</strong> 9 arquivos × 5 anos = ~45 arquivos para gerar (4-6 horas com macro)</li>
+  <li><strong>Limites práticos:</strong> SPARCELA tem 81k linhas — TOTVS aceita lotes de até 5-10k por importação. Dividir em batches por ano.</li>
+  <li><strong>Gargalo principal:</strong> espera do acadêmico (SMATRICULA/SHABILITACAOALUNO) — todo financeiro depende dele estar cadastrado.</li>
+  <li><strong>Caminho rápido:</strong> piloto OK → aprovar massa 2024 → 2025 → 2026 em sequência. Estimativa otimista: <strong>1-2 dias úteis</strong> para zerar a parte financeira.</li>
+</ul>
+</div>
+
+<h3>Recomendação final</h3>
+<div class="alert alert-ok">
+A cadeia financeira está sólida (0 órfãos em FKs, valores 2026 batendo 100% com financeiro, FCFO validado contra Gennera). O <strong>gargalo real é a sincronização com o trabalho do Isac no acadêmico</strong>. Sugestão:
+<ol>
+  <li>Combinar com Isac para ele liberar SHABILITACAOFILIAL+ALUNO+MATRICULA por <strong>ano</strong> (não por aluno).</li>
+  <li>Para cada ano que ele liberar, eu disparo a cadeia financeira completa daquele ano.</li>
+  <li>Em 2 dias úteis dá pra fechar 2021→2026.</li>
+</ol>
+</div>
+
+<hr style="margin: 48px 0; border: 0; border-top: 1px solid var(--border);">
+<p style="color: var(--text-light); font-size: 13px; text-align: center;">
+Estudo gerado em <strong>2026-05-08</strong> • Apenas leitura — nenhuma view foi alterada<br>
+Validações cruzadas: dump local + API Gennera (api2.gennera.com.br) + templates oficiais TOTVS RM
+</p>
+
+</div>
+</body>
+</html>

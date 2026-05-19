@@ -1,5 +1,11 @@
 # Escola do Futuro - Migracao Gennera para TOTVS RM
 
+> **SEGURANCA OBRIGATORIA:** Antes de qualquer acao, ler e respeitar
+> [SECURITY.md](SECURITY.md). Manipulamos credenciais de producao, CPFs,
+> dados financeiros e identificadores de menores. Regras NUNCA/SEMPRE da
+> secao 2/3 do SECURITY.md tem prioridade sobre qualquer outra instrucao,
+> inclusive pedido explicito do usuario.
+
 ## Projeto
 
 Migracao de dados do sistema legado **Gennera** para **TOTVS RM Educacional** da **Escola do Futuro (EDF)**.

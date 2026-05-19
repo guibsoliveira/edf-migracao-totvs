@@ -1,9 +1,27 @@
 # Credenciais e env
 .env
+.env.*
 CLAUDE.local.md
 credentials.json
 *.pem
 *.key
+*secret*
+*senha*
+*password*
+
+# Exports com dados pessoais (LGPD)
+data/exportacoes/
+data/exports/
+data/audit/
+data/relatorios_responsaveis/
+*.csv
+*.xlsx
+*.xlsm
+!templates/**.xlsx
+!modelo_*.xlsx
+flan_*.txt
+slan_*.txt
+sparcela_*.txt
 
 # Python
 __pycache__/
@@ -11,11 +29,15 @@ __pycache__/
 *.pyo
 .venv/
 
-# IDE
+# IDE / Claude Code local
 .vscode/
 .idea/
 *.swp
 *.swo
+.claude/settings.local.json
+
+# Estudos internos com credenciais inline (gerados em sessões antigas, manter local)
+data/estudo/
 
 # OS
 Thumbs.db

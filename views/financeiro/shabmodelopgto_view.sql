@@ -152,11 +152,13 @@ SELECT
     e."CODTIPOCURSO",
     e.codcurso::character varying(10)              AS "CODCURSO",
     e."CODHABILITACAO"::character varying(10)      AS "IDHABILITACAOFILIAL",
-    g.codgrade::character varying(10)              AS "CODGRADE",
+    COALESCE(g.codgrade, e."IDPERLET")::character varying(10) AS "CODGRADE",
     e.turno::character varying(15)                 AS "CODTURNO",
     e."CODFILIAL"
 FROM expanded e
-JOIN export.sgrade g
+-- LEFT JOIN com fallback para IDPERLET: SGRADE nao tem EI cadastrado,
+-- mas o CODGRADE no EDF e sempre igual ao ano letivo
+LEFT JOIN export.sgrade g
     ON g.codcurso = e.codcurso
     AND g.codhabilitacao::text = e."CODHABILITACAO"::text
     AND g.codgrade = e."IDPERLET"
