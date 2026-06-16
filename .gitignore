@@ -39,6 +39,9 @@ __pycache__/
 # Estudos internos com credenciais inline (gerados em sessões antigas, manter local)
 data/estudo/
 
+# Projeto do Isac (referencia local - contem credenciais reais e PII, NUNCA commitar)
+Isac/
+
 # OS
 Thumbs.db
 Desktop.ini
