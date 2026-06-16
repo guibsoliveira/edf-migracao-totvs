@@ -170,26 +170,98 @@ Cada entidade no RM tem uma cadeia de "pais" que precisam existir antes. Se voce
 
 ---
 
-## Sequencia oficial de criacao para 1 aluno
+## Árvore de dependências para 1 aluno (versão definitiva 2026-05-21)
+
+> Reescrita após auditoria de profs Gennera (88 reais vs 155 lixo na view antiga) e decisão de **cancelar SNOTAS/SPROVAS/SFREQUENCIA** em favor do histórico consolidado (`SHISTDISCCOL` + `SHISTALUNOCOL`).
 
 ```
-1. Verificar PPESSOA + SALUNO do aluno (idempotente)
-2. Verificar FCFO do responsavel (idempotente)
-3. Verificar estrutura mestre (SCURSO, SHABILITACAO, SGRADE, SPLETIVO, SDISCIPLINA) - global
-4. Criar SHABILITACAOFILIAL do ano (se ainda nao existe) → capturar IDHABFIL
-5. Criar SHABILITACAOFILIALPL (vinculo com plano pgto) → talvez seja pre-req STURMA
-6. Criar STURMA → capturar CODTURMA
-7. Criar STURMADISC × N disciplinas → capturar IDTURMADISC
-8. Criar SHABILITACAOALUNO (aluno x habilitacao)
-9. Criar SMATRICULA (aluno x turma) → exige IDTURMADISC
-10. Criar SMATRICPL × N (aluno x disciplina) → BLOQUEADO POR PERMISSAO
-11. (Financeiro) Criar SSERVICO se faltar
-12. (Financeiro) Criar SPLANOPGTO → talvez exija SPARCPLANO/SHABMODELOPGTO child no mesmo DataSet
-13. (Financeiro) Criar SHABMODELOPGTO se nao veio junto no passo 12
-14. (Financeiro) Criar SCONTRATO
-15. (Financeiro) Criar SPARCELA × N
-16. (Avaliacao) SETAPAS → SPROVAS → SNOTAS (opcional)
+NÍVEL 0 — MESTRES GLOBAIS (uma vez por instância)
+  STIPOCURSO (1 = Educação Básica)
+  GCOLIGADA (1 = EDF)
+  GFILIAL (1 = UN1, 2 = UN2)
+  GCCUSTO (centros de custo)
+  SCURSO (EI, EF1, EF2, EM)
+  SHABILITACAO (17 séries/habilitações)
+  SGRADE (matriz por ano: 2021-2026)
+  SDISCIPLINA (catálogo: PORT, MAT, etc — 126 no RM)
+  SDISCGRADE (vínculo disciplina↔grade)
+  SETAPAS (config etapas: 1°/2°/3° Trimestre + Recuperação Anual)
+
+NÍVEL 1 — PROFESSORES (uma vez, antes de qualquer turma operacional)
+  PPESSOA (do professor — 1 por id_person canônico)
+  SPROFESSOR (cadastro mestre — usar APENAS profs em
+              gennera_stg.professor_quadro_horarios, excluir placeholders
+              "Professor Substituto*" e "Professor teste*")
+              → 88 distintos no Gennera (NÃO os 155 da view antiga
+              que inclui staff @edf.pro.br)
+
+NÍVEL 2 — ESTRUTURA DO ANO LETIVO (por filial/ano)
+  SPLETIVO → captura IDPERLET (ex: 2022 F1 = 12, F2 = 14)
+  SHABILITACAOFILIAL → captura IDHABFIL (ex: EF2-8-UN1-2022 = 24)
+  SHABILITACAOFILIALPL (via EduHabilitacaoFilialPlData, com 'Pl')
+  STURMA (turmas reais do ano, ex: 8A, 8B...)
+  STURMADISC × N disciplinas → captura IDTURMADISC (ex: 187-199)
+
+NÍVEL 3 — VÍNCULOS PROF↔TURMA (depende de STURMA + STURMADISC + SPROFESSOR)
+  SPROFESSORTURMA × N (prof leciona disciplina X na turma Y do ano Z)
+                       → fonte: gennera_stg.professor_quadro_horarios
+  SHORARIOTURMA × N (horários reais das aulas)
+                    → fonte: professor_quadro_horarios (DIA + INICIO + FIM + TURNO)
+
+NÍVEL 4 — ALUNO NA TURMA
+  PPESSOA do aluno (cross-coligada)
+  SALUNO (aluno + RA)
+  SHABILITACAOALUNO (aluno ↔ habilitação no ano)
+  SMATRICPL (matrícula no período letivo — 1 row/aluno/ano)
+            via IMPORTADOR TOTVS (CSV) — EduMatricPLData.SaveRecord bloqueado
+  SMATRICULA × N (matrícula em disciplina — 13 rows/aluno/ano EF2)
+                  via IMPORTADOR TOTVS (CSV)
+
+NÍVEL 5 — HISTÓRICO ESCOLAR (consolidação anual — CANCELA SNOTAS/SPROVAS)
+  SHISTALUNOCOL (1 row/aluno/ano = status APPROVED/IN_PROGRESS/FAILED)
+                 → fonte: gennera_stg.enrollment.status + enrollment_record agregado
+                 → contém: status, % freq, faltas totais, dias letivos
+  SHISTDISCCOL (1 row/aluno/disciplina/ano = nota final + faltas + CH)
+                → fonte: gennera_stg.grade agregada + enrollment_record
+                → contém: NOTA (média final), FALTAS, CARGAHORARIA, POSICAO
+
+  >> DECISÃO 2026-05-21: NÃO migrar SNOTAS/SPROVAS/SFREQUENCIA detalhadas
+  >> Razão: SHISTDISCCOL já tem média + faltas consolidados, suficiente pra
+  >> histórico oficial emitível. View export.snotas está inflada (3919 rows
+  >> Diego 2022 = junção cartesiana). Apenas anos correntes precisarão de
+  >> SNOTAS/SPROVAS pra portal funcionar — fora do escopo da migração histórica.
+
+NÍVEL 6 — FINANCEIRO (paralelo a Níveis 2-4)
+  SSERVICO (genérico, sem ano/segmento — usar CODs baixos 1-4)
+  SPLANOPGTO (por ano + curso + filial — código {AA}{F}{NNN})
+  SPARCPLANO × N (parcelas do plano — 37 = 12 MENS + 12 ALIM + 12 MAT + 1 1ªMens)
+  SHABMODELOPGTO (vincula plano ↔ habilitação filial)
+  FCFO (responsáveis financeiros — cadastro mestre)
+  SBOLSA (tipos de bolsa)
+  SBOLSAPLETIVO (bolsa ↔ período letivo)
+  SCONTRATO × N (contrato do aluno × serviço × responsável)
+  SPARCELA × N (cobranças reais — 37 por aluno/ano)
+  SBOLSAALUNO × N (bolsa aplicada por aluno por contrato)
+  FLAN / SLAN (lançamentos contábeis — última etapa)
 ```
+
+### Estado real Diego 2022 (auditado 2026-05-21)
+
+| Nível | Item | Status |
+|-------|------|--------|
+| 0 | Todos mestres globais | ✅ existem no RM |
+| 1 | SPROFESSOR (88 reais) | ❌ ZERO no RM (próxima prioridade) |
+| 2 | SPLETIVO/SHABFIL/STURMA/STURMADISC 2022 | ✅ |
+| 3 | SPROFESSORTURMA × 13 (8A 2022) | ❌ |
+| 3 | SHORARIOTURMA (8A 2022) | ❌ |
+| 4 | SALUNO/SHABILITACAOALUNO Diego | ✅ |
+| 4 | SMATRICPL + SMATRICULA × 13 Diego | ✅ (importado 2026-05-20 via CSV) |
+| 5 | SHISTALUNOCOL × 11 anos (2015-2025) | ❌ (dados prontos em export.shistalunocol) |
+| 5 | SHISTDISCCOL × 13 anos × disc | ❌ (dados prontos em export.shistdisccol) |
+| 6 | SSERVICO + SPLANOPGTO 221002 + 37 SPARCPLANO + SHABMODELOPGTO | ✅ |
+| 6 | FCFO Joselia (1645) | ✅ no Gennera, status no RM a confirmar |
+| 6 | SCONTRATO × 4 + SPARCELA × 37 + SBOLSAALUNO × 4 | ❌ |
+| 6 | FLAN | ❌ |
 
 ---
 

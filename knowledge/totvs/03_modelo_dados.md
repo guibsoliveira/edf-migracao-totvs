@@ -17,7 +17,12 @@ GCOLIGADA (1 = EDF)
     STIPOCURSO (1 = Educacao Basica)
       SCURSO (4: EI, EF1, EF2, EM)
         SHABILITACAO (16: K1,K2,N2,N3, 1o-5o, 6o-9o, 1a-3a)
-          SHABILITACAOFILIAL (combinacao curso+hab+filial+IDPERLET)
+          SHABILITACAOFILIAL (combinacao curso+hab+filial+IDPERLET)dependencias da totvs
+          
+          tipo
+          
+          para ter uma série, preeciso de um curso
+          
             STURMA -> STURMADISC -> SDISCIPLINA -> SDISCGRADE
             SMATRICULA -> SMATRICPL -> SHABILITACAOALUNO
 
